@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Editorial Authority | Editor Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,700;6..72,800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#dcd9d9",
+                        "on-secondary-fixed-variant": "#84231f",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "primary": "#6f0000",
+                        "inverse-on-surface": "#f3f0ef",
+                        "secondary": "#a43b33",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#474746",
+                        "secondary-fixed-dim": "#ffb4ab",
+                        "inverse-surface": "#313030",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#fd7d71",
+                        "surface-tint": "#b81f13",
+                        "on-surface-variant": "#5b403c",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-container": "#bcbab9",
+                        "surface-container-high": "#ebe7e7",
+                        "primary-fixed-dim": "#ffb4a8",
+                        "outline-variant": "#e4beb8",
+                        "on-tertiary-fixed": "#1b1c1c",
+                        "outline": "#8f706b",
+                        "error": "#ba1a1a",
+                        "surface-bright": "#fcf8f8",
+                        "on-background": "#1c1b1b",
+                        "background": "#fcf8f8",
+                        "tertiary-fixed": "#e5e2e1",
+                        "primary-container": "#9a0000",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "surface-container": "#f0edec",
+                        "on-surface": "#1c1b1b",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-fixed": "#ffdad4",
+                        "secondary-fixed": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#930000",
+                        "on-primary-fixed": "#410000",
+                        "surface": "#fcf8f8",
+                        "inverse-primary": "#ffb4a8",
+                        "tertiary-container": "#4b4a4a",
+                        "on-secondary-container": "#711513",
+                        "on-primary-container": "#ffa293",
+                        "on-secondary-fixed": "#410002",
+                        "tertiary": "#343434",
+                        "surface-container-highest": "#e5e2e1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Newsreader", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .font-serif { font-family: 'Newsreader', serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary/20">
+<div class="flex h-screen overflow-hidden">
+<!-- SideNavBar Component -->
+<aside class="hidden md:flex flex-col h-screen w-64 border-r border-stone-200/50 dark:border-stone-800 bg-[#fcf8f8] dark:bg-stone-900 py-6 shrink-0">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close-up professional portrait of a senior journalist with thoughtful expression in a warmly lit library office" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSY5PBV_SZF1_34h8P86kpepvmNJIuaeO5ahjQbgBYYjoYm9HTy9a8LQJx2TFqM4vZtnriqbNnXHkHzYT0Ym-mpAOo0oLBX4WcA1oxiMYYqUX-qG4ufMLbIVqHiDU9ufobSUlXjxvXvjsx_em1OEyJg4VaGYWem1RlYwgvwvJGl9vjda1LPcMZKRNhRN3SMx5KzcTIs5gwo_6jMOv4hWh77XJ8tCYUfk_28-6qOrFnQePps_AUJu35vmGAi0jiHJq71qyBsTal5Q"/>
+</div>
+<div>
+<h2 class="text-lg font-serif font-bold text-[#6f0000] leading-tight">The Curator</h2>
+<p class="text-[10px] font-sans font-medium tracking-wide uppercase text-stone-500">Lead Editorial</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1 px-3">
+<!-- Dashboard Active -->
+<a class="flex items-center gap-3 px-3 py-2 text-[#6f0000] dark:text-red-400 font-bold bg-[#f5eeee] dark:bg-red-950/20 rounded-r-full hover:pl-2 transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-sans text-sm font-medium tracking-wide uppercase">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 hover:pl-2 transition-all duration-300 ease-in-out opacity-80 hover:opacity-100" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="font-sans text-sm font-medium tracking-wide uppercase">Stories</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 hover:pl-2 transition-all duration-300 ease-in-out opacity-80 hover:opacity-100" href="#">
+<span class="material-symbols-outlined" data-icon="edit_note">edit_note</span>
+<span class="font-sans text-sm font-medium tracking-wide uppercase">Drafts</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 hover:pl-2 transition-all duration-300 ease-in-out opacity-80 hover:opacity-100" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span class="font-sans text-sm font-medium tracking-wide uppercase">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 hover:pl-2 transition-all duration-300 ease-in-out opacity-80 hover:opacity-100" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-sans text-sm font-medium tracking-wide uppercase">Subscribers</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 hover:pl-2 transition-all duration-300 ease-in-out opacity-80 hover:opacity-100" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-sans text-sm font-medium tracking-wide uppercase">Archive</span>
+</a>
+</nav>
+<div class="px-6 py-4">
+<button class="w-full bg-primary hover:bg-primary-container text-on-primary py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all duration-300 shadow-sm active:scale-95">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+<span class="font-sans text-xs font-bold uppercase tracking-widest">New Story</span>
+</button>
+</div>
+<div class="px-3 mt-auto space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-stone-500 hover:text-stone-800 dark:text-stone-400 hover:pl-2 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-sans text-xs font-medium uppercase tracking-wide">Support</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-stone-500 hover:text-primary dark:text-stone-400 hover:pl-2 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-sans text-xs font-medium uppercase tracking-wide">Log Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col overflow-y-auto">
+<!-- TopNavBar Component -->
+<header class="bg-[#fcf8f8] dark:bg-stone-950/80 backdrop-blur-xl docked full-width top-0 z-50 sticky flex justify-between items-center w-full px-6 py-3">
+<div class="flex items-center gap-4">
+<span class="md:hidden material-symbols-outlined text-on-surface" data-icon="menu">menu</span>
+<h1 class="text-xl font-serif font-black text-[#1c1b1b] dark:text-stone-100 tracking-tight">The Editorial Authority</h1>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex items-center bg-stone-200/30 dark:bg-stone-800/30 px-3 py-1.5 rounded-lg">
+<span class="material-symbols-outlined text-stone-400 text-lg mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-48 text-on-surface-variant placeholder:text-stone-400" placeholder="Search archives..." type="text"/>
+</div>
+<div class="flex items-center gap-4 text-stone-500 dark:text-stone-400">
+<button class="hover:text-[#6f0000] dark:hover:text-red-400 transition-colors duration-300 scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="hover:text-[#6f0000] dark:hover:text-red-400 transition-colors duration-300 scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="p-6 md:p-10 max-w-7xl mx-auto w-full space-y-10">
+<!-- Welcome Section -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<span class="font-label text-xs uppercase tracking-[0.2em] text-primary font-bold mb-2 block">Executive Overview</span>
+<h2 class="font-headline text-4xl md:text-5xl font-extrabold text-on-surface tracking-tighter">Good morning, Editor.</h2>
+</div>
+<div class="flex gap-3">
+<button class="px-5 py-2 border border-outline-variant/30 text-on-surface-variant font-label text-xs font-bold uppercase tracking-wider rounded hover:bg-surface-container transition-colors">
+                            View Site
+                        </button>
+<button class="px-5 py-2 bg-primary text-on-primary font-label text-xs font-bold uppercase tracking-wider rounded hover:bg-primary-container shadow-sm transition-all active:scale-95">
+                            New Story
+                        </button>
+</div>
+</section>
+<!-- Bento Grid Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface-container-low p-6 flex flex-col justify-between min-h-[160px] group hover:bg-surface-container transition-colors relative overflow-hidden">
+<div class="relative z-10">
+<p class="font-label text-xs uppercase tracking-widest text-on-surface-variant/70 font-semibold">Published Stories</p>
+<h3 class="font-headline text-5xl font-black text-on-surface mt-2">142</h3>
+</div>
+<div class="mt-4 flex items-center text-xs font-medium text-emerald-600">
+<span class="material-symbols-outlined text-sm mr-1" data-icon="trending_up">trending_up</span>
+<span>+4 this month</span>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
+<span class="material-symbols-outlined text-9xl" data-icon="article">article</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 flex flex-col justify-between min-h-[160px] group hover:bg-surface-container transition-colors relative overflow-hidden">
+<div class="relative z-10">
+<p class="font-label text-xs uppercase tracking-widest text-on-surface-variant/70 font-semibold">Drafts</p>
+<h3 class="font-headline text-5xl font-black text-on-surface mt-2">07</h3>
+</div>
+<div class="mt-4 flex items-center text-xs font-medium text-amber-600">
+<span class="material-symbols-outlined text-sm mr-1" data-icon="hourglass_empty">hourglass_empty</span>
+<span>3 ready for review</span>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
+<span class="material-symbols-outlined text-9xl" data-icon="drafts">drafts</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 flex flex-col justify-between min-h-[160px] group hover:bg-surface-container transition-colors relative overflow-hidden">
+<div class="relative z-10">
+<p class="font-label text-xs uppercase tracking-widest text-on-surface-variant/70 font-semibold">New Comments</p>
+<h3 class="font-headline text-5xl font-black text-on-surface mt-2">24</h3>
+</div>
+<div class="mt-4 flex items-center text-xs font-medium text-primary">
+<span class="material-symbols-outlined text-sm mr-1" data-icon="mark_chat_unread">mark_chat_unread</span>
+<span>Urgent response needed</span>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
+<span class="material-symbols-outlined text-9xl" data-icon="forum">forum</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Analytics & Recent Stories (Main Column) -->
+<div class="lg:col-span-2 space-y-8">
+<!-- Analytics Chart Placeholder -->
+<div class="bg-surface-container-lowest p-8 border border-outline-variant/15">
+<div class="flex justify-between items-center mb-10">
+<div>
+<h4 class="font-headline text-2xl font-bold">Weekly Performance</h4>
+<p class="text-xs text-on-surface-variant/70 font-medium">Page views across all published domains</p>
+</div>
+<select class="text-xs font-bold uppercase tracking-wider bg-surface p-2 border-none focus:ring-0">
+<option>Last 7 Days</option>
+<option>Last 30 Days</option>
+</select>
+</div>
+<div class="h-64 flex items-end justify-between gap-2 px-4 border-b border-stone-200">
+<div class="w-full bg-stone-100 hover:bg-primary/20 transition-colors h-[40%] relative group">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">12k</span>
+</div>
+<div class="w-full bg-stone-100 hover:bg-primary/20 transition-colors h-[55%] relative group">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">18k</span>
+</div>
+<div class="w-full bg-stone-100 hover:bg-primary/20 transition-colors h-[45%] relative group">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">15k</span>
+</div>
+<div class="w-full bg-primary/80 h-[85%] relative group">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-100">28k</span>
+</div>
+<div class="w-full bg-stone-100 hover:bg-primary/20 transition-colors h-[60%] relative group">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">20k</span>
+</div>
+<div class="w-full bg-stone-100 hover:bg-primary/20 transition-colors h-[75%] relative group">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">24k</span>
+</div>
+<div class="w-full bg-stone-200 h-[30%] relative group">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">9k</span>
+</div>
+</div>
+<div class="flex justify-between mt-4 px-4 text-[10px] font-bold uppercase tracking-widest text-stone-400">
+<span>Mon</span><span>Tue</span><span>Wed</span><span class="text-primary">Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+</div>
+</div>
+<!-- Recent Stories List -->
+<div class="space-y-4">
+<div class="flex justify-between items-center px-2">
+<h4 class="font-headline text-2xl font-bold">Recent Stories</h4>
+<a class="font-label text-xs font-bold text-primary uppercase tracking-widest hover:underline" href="#">View All</a>
+</div>
+<div class="space-y-px">
+<!-- Story Row -->
+<div class="flex items-center justify-between p-4 bg-surface-container-low hover:bg-surface-container transition-colors group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface overflow-hidden grayscale group-hover:grayscale-0 transition-all">
+<img class="w-full h-full object-cover" data-alt="High-contrast black and white architectural detail of a brutalist concrete building facade with sharp shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJ35XO76djbsylhEEOrbo279HIOTrtR6M1ISxl3op64gZSeCO5v-fJmZDuKZlh-90KrWbr0iMTjX_m7ATW5eTVrE58mCF6o9HXJcgSUG1Jyw2czRmPAz-pwtXsG8NU41osXDA8TP9qc5Tj3xRweDCnuPmUArSetKiYZHIBw302VJKaAbLGKyLykKaBQo9PJOCMw91c6tnS1xdFxq5Gvz7NmsL59ApVGKtgbANVdKKlkDeyGsCzGULn913ZpNEaA0LdKmyLheea3w"/>
+</div>
+<div>
+<h5 class="font-headline text-lg font-bold leading-tight">The Decline of Urban Quiet: An Investigation</h5>
+<p class="text-xs text-on-surface-variant font-medium mt-1">Published • Oct 24, 2023 • 2.4k views</p>
+</div>
+</div>
+<span class="px-2 py-1 bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase tracking-widest">Live</span>
+</div>
+<!-- Story Row -->
+<div class="flex items-center justify-between p-4 bg-surface-container-low hover:bg-surface-container transition-colors group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface overflow-hidden grayscale group-hover:grayscale-0 transition-all">
+<img class="w-full h-full object-cover" data-alt="Overhead shot of an organized desk with a vintage typewriter, heavy books, and a cup of black coffee on dark wood" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBK2YmC4Cuszk2udLP9Za52uv9J_8K-KUdhZcJ9E1DZtGpy_E3Dl_-_uGWZZb_Mwri5cUi3F8ptxpg88HoANRKybXfXEgwyVnOu8bOOYBvnQ9B0SWQhjh4XsTybPqEVgXF20D__MUwLLSOn0obvtkauYHcy6D2Dao5_BiT6D1NDblJQvDKY5RkNJuOEh-odTpYeyA46oEkqzP6HdQ59CA0LJwuvpHWekQLPz2Gk01SnCI1DKg1oloSAYmXa1anIyN-ngtSG0G7_kA"/>
+</div>
+<div>
+<h5 class="font-headline text-lg font-bold leading-tight">Reviving the Long-Form Essay in the Age of AI</h5>
+<p class="text-xs text-on-surface-variant font-medium mt-1">Draft • Last edited 2h ago</p>
+</div>
+</div>
+<span class="px-2 py-1 bg-amber-100 text-amber-800 text-[10px] font-bold uppercase tracking-widest">Drafting</span>
+</div>
+<!-- Story Row -->
+<div class="flex items-center justify-between p-4 bg-surface-container-low hover:bg-surface-container transition-colors group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface overflow-hidden grayscale group-hover:grayscale-0 transition-all">
+<img class="w-full h-full object-cover" data-alt="Macro view of computer circuit board with neon blue and magenta lighting reflecting on metallic traces" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCb0-I7WSFkEPNVULZOIaGb_4ITtUTCShRsyK9p26P5uEi0NWuyY_AnFBRjO_ofN7W0fzeK03bUS-0udcMiQpmdk9EdkvvTmbaHnI1D2ZweqA7XLMBNu0wHsVslgyJYrKm0FTfiZWyIp3SIqUaMbBrphb1i1GutXTndOYVlYdj9W27rAYDw189NpkUA5xgw1q0srgfGmztq8YAmdEombs0X9iWuBKD0ndarl0xSqiQ-ygtJuEaKCKHMQCnClJiC5RKkgVRyzRL8ig"/>
+</div>
+<div>
+<h5 class="font-headline text-lg font-bold leading-tight">Data Sovereignty: The Next Human Right</h5>
+<p class="text-xs text-on-surface-variant font-medium mt-1">Scheduled • Nov 01, 2023</p>
+</div>
+</div>
+<span class="px-2 py-1 bg-blue-100 text-blue-800 text-[10px] font-bold uppercase tracking-widest">Queued</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Sidebar Content -->
+<div class="space-y-8">
+<!-- Recent Activity Feed -->
+<div class="bg-surface-container border border-outline-variant/10 p-6">
+<h4 class="font-label text-xs uppercase tracking-[0.2em] font-bold mb-6">Recent Activity</h4>
+<div class="space-y-6 relative before:absolute before:left-3 before:top-2 before:bottom-2 before:w-px before:bg-stone-300">
+<div class="relative pl-8 flex flex-col gap-1">
+<div class="absolute left-1.5 top-1 w-3 h-3 rounded-full bg-primary ring-4 ring-surface-container"></div>
+<p class="text-sm font-medium">New subscription from <span class="font-bold">marcus.v@domain.com</span></p>
+<span class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">12 minutes ago</span>
+</div>
+<div class="relative pl-8 flex flex-col gap-1">
+<div class="absolute left-1.5 top-1 w-3 h-3 rounded-full bg-stone-400 ring-4 ring-surface-container"></div>
+<p class="text-sm font-medium">Story <span class="italic text-primary">"The Decline..."</span> reached 2k views</p>
+<span class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">1 hour ago</span>
+</div>
+<div class="relative pl-8 flex flex-col gap-1">
+<div class="absolute left-1.5 top-1 w-3 h-3 rounded-full bg-stone-400 ring-4 ring-surface-container"></div>
+<p class="text-sm font-medium">3 new comments flagged as <span class="font-bold text-amber-700">pending review</span></p>
+<span class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">3 hours ago</span>
+</div>
+<div class="relative pl-8 flex flex-col gap-1">
+<div class="absolute left-1.5 top-1 w-3 h-3 rounded-full bg-stone-400 ring-4 ring-surface-container"></div>
+<p class="text-sm font-medium text-stone-500">Scheduled maintenance for 'Archive' completed</p>
+<span class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Yesterday</span>
+</div>
+</div>
+</div>
+<!-- Quick Actions & Stats -->
+<div class="bg-primary p-8 text-on-primary">
+<h4 class="font-label text-[10px] uppercase tracking-[0.3em] font-black opacity-60 mb-4">Editorial Goal</h4>
+<div class="mb-6">
+<div class="flex justify-between items-end mb-2">
+<span class="font-headline text-3xl font-bold">75%</span>
+<span class="font-label text-xs uppercase font-bold">Weekly Quota</span>
+</div>
+<div class="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
+<div class="bg-white h-full w-3/4"></div>
+</div>
+</div>
+<p class="text-xs leading-relaxed opacity-80 mb-6">
+                                You are one investigation away from your weekly publishing goal. Finishing your current draft will complete the set.
+                            </p>
+<button class="w-full bg-white text-primary font-label text-xs font-bold uppercase tracking-widest py-3 rounded-sm hover:bg-stone-100 transition-colors">
+                                Resume Drafting
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Meta -->
+<footer class="mt-auto border-t border-stone-200/50 py-6 px-10 flex flex-col md:flex-row justify-between items-center text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400">
+<p>© 2023 The Editorial Authority CMS v4.2.1</p>
+<div class="flex gap-6 mt-4 md:mt-0">
+<a class="hover:text-primary transition-colors" href="#">Documentation</a>
+<a class="hover:text-primary transition-colors" href="#">API Status</a>
+<a class="hover:text-primary transition-colors" href="#">Legal</a>
+</div>
+</footer>
+</main>
+</div>
+<!-- Mobile Bottom Navigation -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 bg-[#fcf8f8] dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800 flex justify-around items-center py-3 z-50">
+<a class="flex flex-col items-center text-[#6f0000]" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[8px] font-bold uppercase mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center text-stone-400" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="text-[8px] font-bold uppercase mt-1">Stories</span>
+</a>
+<a class="flex flex-col items-center text-stone-400" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="text-[8px] font-bold uppercase mt-1">New</span>
+</a>
+<a class="flex flex-col items-center text-stone-400" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span class="text-[8px] font-bold uppercase mt-1">Stats</span>
+</a>
+<a class="flex flex-col items-center text-stone-400" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="text-[8px] font-bold uppercase mt-1">Profile</span>
+</a>
+</div>
+</body></html>

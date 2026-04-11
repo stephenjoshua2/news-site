@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Inter:wght@300;400;500;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#dcd9d9",
+                        "on-secondary-fixed-variant": "#84231f",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "primary": "#6f0000",
+                        "inverse-on-surface": "#f3f0ef",
+                        "secondary": "#a43b33",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#474746",
+                        "secondary-fixed-dim": "#ffb4ab",
+                        "inverse-surface": "#313030",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#fd7d71",
+                        "surface-tint": "#b81f13",
+                        "on-surface-variant": "#5b403c",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-container": "#bcbab9",
+                        "surface-container-high": "#ebe7e7",
+                        "primary-fixed-dim": "#ffb4a8",
+                        "outline-variant": "#e4beb8",
+                        "on-tertiary-fixed": "#1b1c1c",
+                        "outline": "#8f706b",
+                        "error": "#ba1a1a",
+                        "surface-bright": "#fcf8f8",
+                        "on-background": "#1c1b1b",
+                        "background": "#fcf8f8",
+                        "tertiary-fixed": "#e5e2e1",
+                        "primary-container": "#9a0000",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "surface-container": "#f0edec",
+                        "on-surface": "#1c1b1b",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-fixed": "#ffdad4",
+                        "secondary-fixed": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#930000",
+                        "on-primary-fixed": "#410000",
+                        "surface": "#fcf8f8",
+                        "inverse-primary": "#ffb4a8",
+                        "tertiary-container": "#4b4a4a",
+                        "on-secondary-container": "#711513",
+                        "on-primary-container": "#ffa293",
+                        "on-secondary-fixed": "#410002",
+                        "tertiary": "#343434",
+                        "surface-container-highest": "#e5e2e1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Newsreader", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e5e2e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #5b403c; }
+        body { -webkit-font-smoothing: antialiased; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container">
+<div class="flex h-screen overflow-hidden">
+<!-- SideNavBar - JSON Command Execution -->
+<aside class="hidden md:flex flex-col h-full py-6 bg-[#fcf8f8] dark:bg-stone-900 h-screen w-64 border-r border-stone-200/50 dark:border-stone-800">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined">edit_square</span>
+</div>
+<div>
+<h2 class="text-lg font-serif font-bold text-[#6f0000]">The Curator</h2>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold">Lead Editorial</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="group flex items-center px-6 py-3 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 hover:pl-7 transition-all duration-300 ease-in-out opacity-80 hover:opacity-100" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span>
+<span class="font-sans text-sm font-medium tracking-wide uppercase">Dashboard</span>
+</a>
+<a class="group flex items-center px-6 py-3 text-[#6f0000] dark:text-red-400 font-bold bg-[#f5eeee] dark:bg-red-950/20 rounded-r-full hover:pl-7 transition-all duration-300 ease-in-out opacity-100" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="description">description</span>
+<span class="font-sans text-sm font-medium tracking-wide uppercase">Stories</span>
+</a>
+<a class="group flex items-center px-6 py-3 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 hover:pl-7 transition-all duration-300 ease-in-out opacity-80 hover:opacity-100" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="edit_note">edit_note</span>
+<span class="font-sans text-sm font-medium tracking-wide uppercase">Drafts</span>
+</a>
+<a class="group flex items-center px-6 py-3 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 hover:pl-7 transition-all duration-300 ease-in-out opacity-80 hover:opacity-100" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="bar_chart">bar_chart</span>
+<span class="font-sans text-sm font-medium tracking-wide uppercase">Analytics</span>
+</a>
+</nav>
+<div class="px-6 mt-auto space-y-1">
+<button class="w-full mb-4 py-3 bg-primary text-on-primary font-bold uppercase tracking-widest text-xs rounded shadow-lg hover:bg-primary-container transition-all">
+                    New Story
+                </button>
+<a class="group flex items-center py-2 text-stone-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mr-3 text-sm" data-icon="help">help</span>
+<span class="text-xs uppercase tracking-wider">Support</span>
+</a>
+<a class="group flex items-center py-2 text-stone-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mr-3 text-sm" data-icon="logout">logout</span>
+<span class="text-xs uppercase tracking-wider">Log Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Workspace -->
+<div class="flex-1 flex flex-col h-full bg-surface-container-low overflow-hidden">
+<!-- TopAppBar - JSON Command Execution -->
+<header class="flex justify-between items-center w-full px-6 py-3 bg-[#fcf8f8] dark:bg-stone-950/80 backdrop-blur-xl docked full-width top-0 z-50 sticky">
+<div class="flex items-center gap-4">
+<h1 class="text-xl font-serif font-black text-[#1c1b1b] dark:text-stone-100">The Editorial Authority</h1>
+<span class="h-4 w-px bg-stone-300"></span>
+<span class="text-xs font-label uppercase tracking-widest text-primary font-bold">Story Editor</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex items-center bg-stone-200/50 rounded px-3 py-1.5">
+<span class="material-symbols-outlined text-stone-500 text-sm mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-48 placeholder:text-stone-400" placeholder="Search archive..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-stone-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-stone-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<img alt="Journalist Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/20" data-alt="Close-up portrait of a professional male journalist with glasses in a modern newsroom setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_a5yyh-EuXK1Oe8qwQRT1Cm-LJdL6mEASK1A1qOBNM7B9fU3bsz8E7LlUN8rFoIUDkS-MuiKI24yAxaLkTgWpPPst7Yw_Utno9bh08ZOAkqbozBoGXiWC-fVjsuqwjlJ0qBb3XWboQwCreCbKvU48L7_oB1v2qLe-YcE6sfhUyAR75f9CJJ7zGZj0-OqkalceKZDGg4bsjKdaT295JvixXFeTtCcuh3E_KX7PbCx-D34IR7dnaZwe8lDt_cbHkltvPfaE1fWqPA"/>
+</div>
+</div>
+</header>
+<!-- Editor Workspace -->
+<main class="flex-1 overflow-y-auto px-6 py-8">
+<div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Content Column -->
+<div class="lg:col-span-8 space-y-8">
+<!-- Title Area -->
+<div class="bg-surface p-8 rounded shadow-sm border-l-4 border-primary">
+<textarea class="w-full bg-transparent border-none focus:ring-0 text-5xl font-serif font-bold text-on-surface placeholder:text-stone-300 resize-none leading-tight" placeholder="Enter headline..." rows="2"></textarea>
+<div class="flex flex-wrap gap-4 mt-6 pt-6 border-t border-stone-100">
+<div class="flex-1 min-w-[200px]">
+<label class="block text-[10px] font-bold uppercase tracking-tighter text-on-surface-variant mb-1">Category</label>
+<select class="w-full bg-surface-container-low border-none rounded text-sm focus:ring-1 focus:ring-primary">
+<option>Investigation</option>
+<option>Politics</option>
+<option>International</option>
+<option>Culture</option>
+<option>Technology</option>
+</select>
+</div>
+<div class="flex-1 min-w-[200px]">
+<label class="block text-[10px] font-bold uppercase tracking-tighter text-on-surface-variant mb-1">Location</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-stone-400 text-sm">location_on</span>
+<input class="w-full bg-surface-container-low border-none rounded text-sm pl-8 focus:ring-1 focus:ring-primary" placeholder="e.g. Washington, D.C." type="text"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Media Section -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-surface p-6 rounded shadow-sm group">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-[10px] font-bold uppercase tracking-tighter text-primary">Featured Image</h3>
+<button class="text-stone-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">upload_file</span>
+</button>
+</div>
+<div class="aspect-video bg-stone-100 rounded overflow-hidden relative cursor-pointer group-hover:bg-stone-200 transition-colors">
+<img alt="Editorial Preview" class="w-full h-full object-cover opacity-80" data-alt="Dramatic high-contrast photograph of an old typewriter on a wooden desk with newspapers in the background, warm light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZD7hPZAAIiNcm-TjGb0q4dcdpePclGuxM--PEkZ3xx0Y3XpEgmN5ElBTPaKPANSUOOr2boGHskE1L0vek86s9bHrHJmdnG9YI41TFclv1FAVN80jx-KN7LP4JKkn1I3NQ9b94nM6-Nmxp2mpXRcIOs3KOAxs_54RufPkXD8waJL0IxJKQPCfrR634Cm-h1QypQ7_yR4jfvqMo3c07hKKdsAOeaZMkT4YKuHe-Jj14w-yhS7bQTQrys4Yzmsk0DkQwthxvTaeYXw"/>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-primary/20 backdrop-blur-sm transition-opacity">
+<span class="bg-surface px-4 py-2 rounded text-xs font-bold uppercase">Change Image</span>
+</div>
+</div>
+</div>
+<div class="bg-surface p-6 rounded shadow-sm">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-[10px] font-bold uppercase tracking-tighter text-on-surface-variant">Multimedia Link</h3>
+<span class="material-symbols-outlined text-stone-400 text-sm">link</span>
+</div>
+<div class="space-y-4">
+<input class="w-full bg-surface-container-low border-none rounded text-xs p-3 focus:ring-1 focus:ring-primary" placeholder="Video URL (YouTube/Vimeo)" type="url"/>
+<div class="p-4 rounded border border-dashed border-stone-200 text-center">
+<span class="material-symbols-outlined text-stone-300 text-3xl mb-1">movie</span>
+<p class="text-[10px] text-stone-400">Drag and drop raw footage or video assets here</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Rich Text Area -->
+<div class="bg-surface rounded shadow-sm overflow-hidden">
+<div class="flex items-center gap-1 p-2 border-b border-stone-100 bg-stone-50/50">
+<button class="p-2 hover:bg-stone-200 rounded transition-colors"><span class="material-symbols-outlined text-sm">format_bold</span></button>
+<button class="p-2 hover:bg-stone-200 rounded transition-colors"><span class="material-symbols-outlined text-sm">format_italic</span></button>
+<button class="p-2 hover:bg-stone-200 rounded transition-colors"><span class="material-symbols-outlined text-sm">format_quote</span></button>
+<div class="h-4 w-px bg-stone-300 mx-1"></div>
+<button class="p-2 hover:bg-stone-200 rounded transition-colors"><span class="material-symbols-outlined text-sm">format_list_bulleted</span></button>
+<button class="p-2 hover:bg-stone-200 rounded transition-colors"><span class="material-symbols-outlined text-sm">format_list_numbered</span></button>
+<div class="h-4 w-px bg-stone-300 mx-1"></div>
+<button class="p-2 hover:bg-stone-200 rounded transition-colors"><span class="material-symbols-outlined text-sm">add_photo_alternate</span></button>
+<button class="p-2 hover:bg-stone-200 rounded transition-colors ml-auto"><span class="material-symbols-outlined text-sm">fullscreen</span></button>
+</div>
+<div class="p-8 min-h-[500px]">
+<label class="block text-[10px] font-bold uppercase tracking-tighter text-on-surface-variant mb-4">Excerpt (Abstract)</label>
+<textarea class="w-full bg-transparent border-none focus:ring-0 text-lg italic text-on-surface-variant placeholder:text-stone-300 mb-8 border-l-2 border-stone-100 pl-4 resize-none" placeholder="Write a compelling lead..." rows="2"></textarea>
+<label class="block text-[10px] font-bold uppercase tracking-tighter text-on-surface-variant mb-4">Story Body</label>
+<div class="prose prose-stone max-w-none">
+<textarea class="w-full bg-transparent border-none focus:ring-0 text-xl leading-relaxed text-on-surface placeholder:text-stone-300 min-h-[400px] resize-none" placeholder="Start your investigation here..."></textarea>
+</div>
+</div>
+</div>
+</div>
+<!-- Sidebar Controls -->
+<div class="lg:col-span-4 space-y-6">
+<!-- Publishing Status -->
+<div class="bg-surface p-6 rounded shadow-sm sticky top-24">
+<h3 class="text-xs font-bold uppercase tracking-widest text-on-surface mb-6 flex items-center">
+<span class="material-symbols-outlined mr-2 text-primary" style="font-variation-settings: 'FILL' 1;">assignment_turned_in</span>
+                                Publishing
+                            </h3>
+<div class="space-y-6">
+<div class="flex justify-between items-center">
+<span class="text-sm text-on-surface-variant">Status</span>
+<span class="bg-stone-100 text-stone-600 text-[10px] font-black uppercase px-2 py-1 rounded">Draft</span>
+</div>
+<div>
+<label class="block text-[10px] font-bold uppercase tracking-tighter text-on-surface-variant mb-2">Publish Date</label>
+<div class="relative">
+<input class="w-full bg-surface-container-low border-none rounded text-xs p-2 focus:ring-1 focus:ring-primary" type="datetime-local"/>
+</div>
+<p class="mt-2 text-[10px] text-stone-400 italic">Leave empty for immediate release</p>
+</div>
+<div class="pt-4 border-t border-stone-100 space-y-3">
+<button class="w-full py-3 border border-primary text-primary font-bold uppercase tracking-widest text-xs hover:bg-primary/5 transition-colors rounded">
+                                        Save Draft
+                                    </button>
+<button class="w-full py-4 bg-primary text-on-primary font-bold uppercase tracking-widest text-xs shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all rounded">
+                                        Publish Story
+                                    </button>
+</div>
+<div class="pt-6">
+<button class="flex items-center text-error hover:underline text-[10px] font-bold uppercase tracking-widest group">
+<span class="material-symbols-outlined text-sm mr-1 group-hover:shake">delete</span>
+                                        Delete Forever
+                                    </button>
+</div>
+</div>
+</div>
+<!-- Metadata/SEO -->
+<div class="bg-surface-container p-6 rounded">
+<h3 class="text-[10px] font-black uppercase tracking-widest text-on-surface mb-4">Metadata</h3>
+<div class="space-y-4">
+<div>
+<label class="block text-[10px] font-bold text-on-surface-variant mb-1">Tags (Comma separated)</label>
+<input class="w-full bg-surface border-none rounded text-xs p-2" placeholder="politics, corruption, white-house" type="text"/>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-xs text-on-surface-variant">Allow Comments</span>
+<button class="w-10 h-5 bg-primary rounded-full relative">
+<span class="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></span>
+</button>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-xs text-on-surface-variant">Featured on Home</span>
+<button class="w-10 h-5 bg-stone-300 rounded-full relative">
+<span class="absolute left-1 top-1 w-3 h-3 bg-white rounded-full"></span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

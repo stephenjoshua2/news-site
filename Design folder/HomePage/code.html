@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Editorial Authority | Digital News</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary": "#6f0000",
+                      "secondary-fixed-dim": "#ffb4ab",
+                      "surface-bright": "#fcf8f8",
+                      "on-primary-fixed-variant": "#930000",
+                      "on-tertiary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary-fixed": "#410000",
+                      "surface-container-low": "#f6f3f2",
+                      "error": "#ba1a1a",
+                      "surface-container-highest": "#e5e2e1",
+                      "error-container": "#ffdad6",
+                      "on-error-container": "#93000a",
+                      "on-tertiary-fixed": "#1b1c1c",
+                      "on-tertiary-fixed-variant": "#474746",
+                      "tertiary-fixed": "#e5e2e1",
+                      "primary-fixed-dim": "#ffb4a8",
+                      "outline": "#8f706b",
+                      "surface-dim": "#dcd9d9",
+                      "outline-variant": "#e4beb8",
+                      "tertiary-fixed-dim": "#c8c6c5",
+                      "on-primary-container": "#ffa293",
+                      "inverse-primary": "#ffb4a8",
+                      "surface": "#fcf8f8",
+                      "on-background": "#1c1b1b",
+                      "surface-container": "#f0edec",
+                      "secondary": "#a43b33",
+                      "on-secondary": "#ffffff",
+                      "secondary-fixed": "#ffdad6",
+                      "tertiary": "#343434",
+                      "on-tertiary-container": "#bcbab9",
+                      "on-surface-variant": "#5b403c",
+                      "surface-variant": "#e5e2e1",
+                      "on-error": "#ffffff",
+                      "inverse-surface": "#313030",
+                      "surface-container-high": "#ebe7e7",
+                      "tertiary-container": "#4b4a4a",
+                      "primary-container": "#9a0000",
+                      "on-secondary-fixed-variant": "#84231f",
+                      "on-secondary-fixed": "#410002",
+                      "on-primary": "#ffffff",
+                      "primary-fixed": "#ffdad4",
+                      "surface-tint": "#b81f13",
+                      "secondary-container": "#fd7d71",
+                      "inverse-on-surface": "#f3f0ef",
+                      "on-secondary-container": "#711513",
+                      "background": "#fcf8f8",
+                      "on-surface": "#1c1b1b"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "fontFamily": {
+                      "headline": ["Newsreader", "serif"],
+                      "body": ["Inter", "sans-serif"],
+                      "label": ["Inter", "sans-serif"]
+              }
+            },
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 30s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-container selection:text-white">
+<!-- Top Utility Bar -->
+<nav class="w-full bg-surface-container-low border-b border-outline-variant/10 px-6 py-2">
+<div class="max-w-screen-2xl mx-auto flex justify-between items-center text-[10px] uppercase tracking-widest font-label font-bold text-on-surface-variant">
+<div class="flex items-center gap-6">
+<span>Monday, October 14, 2024</span>
+<div class="flex gap-4">
+<a class="hover:text-primary transition-colors" href="#">Digital Edition</a>
+<a class="hover:text-primary transition-colors" href="#">Newsletters</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex gap-3 mr-4">
+<span class="material-symbols-outlined !text-sm cursor-pointer hover:text-primary" data-icon="rss_feed">rss_feed</span>
+<span class="material-symbols-outlined !text-sm cursor-pointer hover:text-primary" data-icon="calendar_today">calendar_today</span>
+</div>
+<a class="bg-primary text-on-primary px-3 py-1 rounded-sm hover:bg-primary-container transition-all" href="#">Subscribe</a>
+</div>
+</div>
+</nav>
+<!-- Site Header & Main Navigation (TopNavBar) -->
+<header class="bg-[#fcf8f8]/80 dark:bg-zinc-950/80 backdrop-blur-xl shadow-sm sticky top-0 z-50">
+<div class="flex flex-col w-full max-w-screen-2xl mx-auto px-6 py-4 gap-4">
+<div class="flex justify-between items-center">
+<div class="flex-1 lg:hidden">
+<span class="material-symbols-outlined text-on-surface cursor-pointer" data-icon="menu">menu</span>
+</div>
+<div class="flex-1 hidden lg:flex items-center gap-4">
+<span class="material-symbols-outlined text-zinc-600" data-icon="search">search</span>
+<span class="text-xs uppercase tracking-tighter text-zinc-500">Search the archive</span>
+</div>
+<h1 class="font-serif italic text-3xl font-black text-red-900 dark:text-red-600 text-center flex-1">
+                    The Editorial Authority
+                </h1>
+<div class="flex-1 flex justify-end items-center gap-4">
+<span class="material-symbols-outlined text-zinc-600 cursor-pointer scale-95 active:scale-90 transition-transform" data-icon="calendar_today">calendar_today</span>
+<span class="material-symbols-outlined text-zinc-600 cursor-pointer scale-95 active:scale-90 transition-transform" data-icon="rss_feed">rss_feed</span>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex justify-center items-center gap-8 border-t border-zinc-100 pt-4 overflow-x-auto whitespace-nowrap scrollbar-hide">
+<a class="font-serif text-lg tracking-tight uppercase text-red-800 dark:text-red-500 font-bold border-b-2 border-red-800 pb-1" href="#">News</a>
+<a class="font-serif text-lg tracking-tight uppercase text-zinc-600 dark:text-zinc-400 hover:text-red-900 transition-colors" href="#">Politics</a>
+<a class="font-serif text-lg tracking-tight uppercase text-zinc-600 dark:text-zinc-400 hover:text-red-900 transition-colors" href="#">Business</a>
+<a class="font-serif text-lg tracking-tight uppercase text-zinc-600 dark:text-zinc-400 hover:text-red-900 transition-colors" href="#">Tech</a>
+<a class="font-serif text-lg tracking-tight uppercase text-zinc-600 dark:text-zinc-400 hover:text-red-900 transition-colors" href="#">Opinion</a>
+<a class="font-serif text-lg tracking-tight uppercase text-zinc-600 dark:text-zinc-400 hover:text-red-900 transition-colors" href="#">Culture</a>
+</nav>
+</div>
+<div class="bg-zinc-100 dark:bg-zinc-900 h-[1px] w-full"></div>
+</header>
+<!-- Breaking News Strip -->
+<div class="bg-primary-container text-on-primary py-2 overflow-hidden flex items-center">
+<div class="px-6 flex-shrink-0 flex items-center gap-2 border-r border-white/20 mr-4">
+<span class="material-symbols-outlined text-sm" data-icon="bolt" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="font-label font-bold text-xs uppercase tracking-widest">Breaking</span>
+</div>
+<div class="marquee-container flex-1">
+<div class="marquee-content inline-flex gap-12 text-sm font-medium">
+<span>Global Markets Face Record Volatility Amid New Policy Shifts</span>
+<span>Space Exploration Agency Announces Landmark Discovery on Europa</span>
+<span>Unprecedented Heatwave Prompts Emergency Climate Summit in Geneva</span>
+<span>Global Markets Face Record Volatility Amid New Policy Shifts</span>
+<span>Space Exploration Agency Announces Landmark Discovery on Europa</span>
+<span>Unprecedented Heatwave Prompts Emergency Climate Summit in Geneva</span>
+</div>
+</div>
+</div>
+<!-- Main Content Grid -->
+<main class="max-w-screen-2xl mx-auto px-6 py-12">
+<!-- Hero & Sidebar Section -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+<!-- Lead Story (Asymmetric Layout) -->
+<div class="lg:col-span-8 flex flex-col gap-6">
+<div class="relative group cursor-pointer overflow-hidden rounded-lg">
+<img alt="Lead story investigative journalism" class="w-full aspect-[16/9] object-cover transition-transform duration-700 group-hover:scale-105" data-alt="cinematic close up of a vintage typewriter and scattered documents in a moody sunlit office with dust particles in the air" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIXPsHLOQoLxawvC8jIlIz_HhT5q7Y-_ZY8r1RB50d23LwWKPQEO3DGCOJX9Lb_XmodYpHWwbCDHcqG2EZW66-gQdkrdIk5HJeaRlrtj-DwHehNtbdIUaaNU09IvnVy4PqozONbtE5yIf4MHaFuCcb7f4z0OO5RJLtXJ7kep1J-bWYHJBESH-zPEtNOODT0wDriM5EFztrZH6XovLvuPX-cGfWsv27lPzQcykEvtgDLQUbXwbs0e04UFTtmz42fQ33tuJCUIrdXw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+<div class="absolute top-6 left-6">
+<span class="bg-primary text-on-primary px-3 py-1 font-label text-[10px] font-bold uppercase tracking-widest">Investigation</span>
+</div>
+</div>
+<div class="max-w-3xl -mt-16 lg:-mt-24 z-10 bg-surface p-8 pr-0 border-l-4 border-primary">
+<h2 class="font-headline text-5xl lg:text-6xl font-bold text-on-surface leading-[0.95] tracking-tight mb-4">
+                        The Paper Trail: How Dark Money Reshapes the Coastal Skyline.
+                    </h2>
+<p class="font-body text-on-surface-variant text-lg leading-relaxed mb-6 max-w-2xl">
+                        A six-month inquiry reveals the offshore entities and legislative loopholes driving a construction boom that locals can no longer afford.
+                    </p>
+<div class="flex items-center gap-4 text-xs font-label uppercase tracking-wider text-zinc-500 font-bold">
+<span>By Elena Moretti</span>
+<span class="w-1.5 h-1.5 bg-primary rounded-full"></span>
+<span>12 Min Read</span>
+<span class="w-1.5 h-1.5 bg-primary rounded-full"></span>
+<span>Oct 14, 2024</span>
+</div>
+</div>
+</div>
+<!-- "More Coverage" Sidebar -->
+<aside class="lg:col-span-4 flex flex-col gap-10">
+<div class="border-b-2 border-primary w-24 mb-4"></div>
+<h3 class="font-headline text-2xl font-bold uppercase tracking-tight italic">More Coverage</h3>
+<div class="flex flex-col gap-8">
+<!-- Editorial Card 1 -->
+<article class="group cursor-pointer">
+<div class="flex gap-4">
+<div class="w-24 h-24 flex-shrink-0 overflow-hidden bg-surface-container-low rounded-sm">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="macro shot of currency bills being counted with shallow depth of field and dramatic shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvD6Ydc_-CIY3QCdwueYjJs-DEXL8A3LfU-2ij_7aSPB6sVRYTh49YYxQiN-gZRcpBLNMn0qS3yfyYxhseDKzQNcK69zmgOqj3bb4srp2WfQoeruGJFjWgigIYJUGnIMyLd0Z8mCwsFsNlMPTLZJfLh1AHCJS7XDBTpBqccdX_-bZxRKC39n-PdKecwegQ6lchc4s1vAEpZtZfaNeiPBBUM7A8Y5W_kFWgVQ36nEJUPqIORlaSWGOwtnBgMn5ezM_VRrFdKXex8Q"/>
+</div>
+<div class="flex flex-col justify-center">
+<span class="text-primary font-label text-[9px] font-bold uppercase tracking-widest mb-1">Economy</span>
+<h4 class="font-headline text-lg font-bold leading-tight group-hover:text-primary transition-colors">Central Bank Signals Sharp Pivot on Interest Rates.</h4>
+</div>
+</div>
+</article>
+<!-- Editorial Card 2 -->
+<article class="group cursor-pointer">
+<div class="flex gap-4">
+<div class="w-24 h-24 flex-shrink-0 overflow-hidden bg-surface-container-low rounded-sm">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="low angle shot of a glass skyscraper reflecting a stormy blue sky with sharp geometric lines" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWoaXQC23fFCgxj2l-SZZMFIiOE5HhBU64QcaE2HcRcJEFGep21ZOPU1aO3pW1IvPC5m4MTVAHl2ww2arxF37A31l9rR3jlGo-P4OKyNzCuw6NJoogwhH4R96wvBph7JcH-APpXqSViRbKQrWybgx29Krxvd9kyTJWZZ1vlkgT8sHzDgtrGomp_c0fGgbK3LyRlqly3EMMOhklzxvtKIXMvfc6-ZAMjImUzIxGia2zix0PBf_y5Mn9bBofzVAf4x8dioDp5sqNRg"/>
+</div>
+<div class="flex flex-col justify-center">
+<span class="text-primary font-label text-[9px] font-bold uppercase tracking-widest mb-1">Architecture</span>
+<h4 class="font-headline text-lg font-bold leading-tight group-hover:text-primary transition-colors">The Vertical Forest: Is the Green Skyscraper Actually Sustainable?</h4>
+</div>
+</div>
+</article>
+<!-- Editorial Card 3 -->
+<article class="group cursor-pointer">
+<div class="flex gap-4">
+<div class="w-24 h-24 flex-shrink-0 overflow-hidden bg-surface-container-low rounded-sm">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="abstract close up of glowing circuit board with green and blue data streams flowing through components" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7vag2PyzBIkQs6TeOoc2Y6sKWVJqSrcgHbKMkANlEO9qkAZC2_GqKarysXyK75UIDgs15wVbzhH9waEjnR8k5X0hPaxi7OjVtAh2Z2N5DtTSugAz0eHMY7y5_4Fge04I-JvKtFOvZ2EOSH837V6O4CbGvGYXI3v084LEDJ_iuASEithIvU_yoTnQw2mpDKNjca1e1smPaVad_VbWHV7cqs45Dvcmik6Fqxl0e41PdT9cKDZ4Pj5J2hLaksz-HViEojCyzpZpiMw"/>
+</div>
+<div class="flex flex-col justify-center">
+<span class="text-primary font-label text-[9px] font-bold uppercase tracking-widest mb-1">Technology</span>
+<h4 class="font-headline text-lg font-bold leading-tight group-hover:text-primary transition-colors">Neural Mesh: The Quiet Revolution in Edge Computing.</h4>
+</div>
+</div>
+</article>
+</div>
+<div class="mt-4 p-6 bg-surface-container-low rounded-lg border-t-4 border-primary">
+<h5 class="font-headline text-xl font-bold mb-2 italic">The Curator's Digest</h5>
+<p class="text-sm text-on-surface-variant mb-4">Every Sunday morning, the stories that actually matter, curated for your inbox.</p>
+<div class="flex">
+<input class="flex-1 border-outline-variant bg-white text-sm px-4 py-2 focus:ring-primary focus:border-primary" placeholder="Email address" type="email"/>
+<button class="bg-on-surface text-surface px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-primary transition-colors">Join</button>
+</div>
+</div>
+</aside>
+</div>
+<!-- Latest Stories Grid -->
+<section class="mt-24">
+<div class="flex items-end gap-6 mb-12">
+<h3 class="font-headline text-4xl font-black italic tracking-tighter">Latest Stories</h3>
+<div class="flex-1 border-b border-outline-variant/30 h-4 mb-2"></div>
+<a class="font-label text-[10px] font-extrabold uppercase tracking-widest flex items-center gap-1 group" href="#">
+                    View Archive 
+                    <span class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+<!-- Grid Item 1 -->
+<div class="flex flex-col group cursor-pointer">
+<div class="aspect-[4/5] overflow-hidden rounded-sm mb-4">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="bustling neon lit street in Tokyo at night with rain reflecting on the pavement and people with umbrellas" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLCZKqqm4Phdw2VfJIswHUEixsZJoTQMntN4s2AYlcN5g-Y5WeWbu3Ae71Hemebb4mlF6W9OZBvWjojIVGb5HwRncktk5hyog1Q1utQY2ecbw8Loi_FPdnnA7PWajHRnZF5tVM2bh6lU_qAx7gA3hOo-mdfH0juis3JepqMH738WtQ827udrzBOXWSg33wn9SoyYog8c4DAXZV67UknBE6bX9b6x8gaENrr_jgE6nYr2tHKPlery8yXNsZfviTL19KAqxvDpLDFw"/>
+</div>
+<span class="text-primary font-label text-[9px] font-bold uppercase tracking-widest mb-2">Travel</span>
+<h4 class="font-headline text-xl font-bold leading-tight mb-2 group-hover:underline underline-offset-4 decoration-1">Tokyo: A Study in Urban Resilience and Density.</h4>
+<p class="text-xs text-on-surface-variant line-clamp-2">How the world's largest metropolis balances massive infrastructure with intimate social spaces.</p>
+</div>
+<!-- Grid Item 2 -->
+<div class="flex flex-col group cursor-pointer">
+<div class="aspect-[4/5] overflow-hidden rounded-sm mb-4">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="minimalist art gallery space with soft white walls and a single large abstract sculpture in the center with dramatic top lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3yU6Otix7FkpFmIk6gahlxIXSnVVSY5SQAlHLQGYrFUzvMCwDxG2pWhHGl6pKTkdGnQbdNCRrzpT1kVjrTG1zJzTsujOcZp-7YIWfY1JU2wrQlkEx6nsxIbAGN8uAjAyieAvk5Bdsrrxqg_t-M54fN93so_Sg51GTyznRHhC2BS3tg1aGIPa7APRP6El_OT3XMz0w--W7bq1SvvC1MZTFUTIiRFynypbJX89mYkrm29-2gezbWWQNKEIBfCI96WqI3bhTL1t2uQ"/>
+</div>
+<span class="text-primary font-label text-[9px] font-bold uppercase tracking-widest mb-2">Culture</span>
+<h4 class="font-headline text-xl font-bold leading-tight mb-2 group-hover:underline underline-offset-4 decoration-1">The Return of the Physical Object in a Digital Age.</h4>
+<p class="text-xs text-on-surface-variant line-clamp-2">Exploring the rise of bespoke craftsmanship and analog mediums among Gen Z collectors.</p>
+</div>
+<!-- Grid Item 3 -->
+<div class="flex flex-col group cursor-pointer">
+<div class="aspect-[4/5] overflow-hidden rounded-sm mb-4">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="dark office interior with multiple high tech computer screens showing complex data visualizations in cyan and orange" src="https://lh3.googleusercontent.com/aida-public/AB6AXuColgaFfwQeuw7-b6EhXIzsIGVntCab0ScRJL9xufLtSDu8BSFX1C87BXe-1_WlnjjE1WwU8r8I9E16Lyfu9za8W6tGkapvbnhGmsJIruK777n4HzPLbtl-wcKceqtX4Fyjf67Ltg-vSBVovrWm2Eh_eCJBu2tr9Z8MkXPI4JfAXXH-c4VWHyFfhDx9N2kTMw0hjNTATUhc88MdAVw7CbCx3h_SlckY9bksVNNsP5Wt61jAvRfz3Yw9N6ubtet4Hgw09UnDy6lC2A"/>
+</div>
+<span class="text-primary font-label text-[9px] font-bold uppercase tracking-widest mb-2">Business</span>
+<h4 class="font-headline text-xl font-bold leading-tight mb-2 group-hover:underline underline-offset-4 decoration-1">The Invisible Workforce Powering Artificial Intelligence.</h4>
+<p class="text-xs text-on-surface-variant line-clamp-2">Behind the algorithms lie millions of data labelers in the global south working for cents.</p>
+</div>
+<!-- Grid Item 4 -->
+<div class="flex flex-col group cursor-pointer">
+<div class="aspect-[4/5] overflow-hidden rounded-sm mb-4">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="microscopic view of biological cells with vibrant fluorescent dyes in purple and gold with complex textures" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxjh_8PFzIEuK9v_WCpqq4_qyz0y_qy8ZjdCoAI3Icu65pPprUsgHo1sjVgSxhmdlwmgd-KYW7yi28e_VDFaOZtM2BWVgq_zKaPa5r-QuJSNxUN9xMba13hze7J4gHCnJFNUecnA6-DNml2LSeg_p8kMaMTeJAF0-sxUzAiWoZN3VuLUT9O-WhhvNKCcdkpzaySsl3eiP8mNZ9WuhdNi88sUqFWmNwPHs_8YfDzn0tpntf9M__si-SEYwzFbsIl3l2tyX4UqV_ww"/>
+</div>
+<span class="text-primary font-label text-[9px] font-bold uppercase tracking-widest mb-2">Science</span>
+<h4 class="font-headline text-xl font-bold leading-tight mb-2 group-hover:underline underline-offset-4 decoration-1">Precision Medicine: The End of the General Practitioner?</h4>
+<p class="text-xs text-on-surface-variant line-clamp-2">How genomic sequencing is transforming diagnostic protocols at the molecular level.</p>
+</div>
+</div>
+</section>
+<!-- Top News (High Density List) -->
+<section class="mt-24 grid grid-cols-1 lg:grid-cols-12 gap-12 bg-surface-container-low p-12 rounded-xl">
+<div class="lg:col-span-4">
+<h3 class="font-headline text-5xl font-black text-primary leading-none mb-4">Top News</h3>
+<p class="text-on-surface-variant font-medium leading-relaxed mb-8">The defining events of the last 24 hours, contextualized by our editorial desk.</p>
+<div class="bg-white/50 backdrop-blur p-6 rounded-lg border border-outline-variant/20">
+<h5 class="text-xs font-bold uppercase tracking-widest text-on-surface mb-2">Live Update</h5>
+<div class="flex items-start gap-3 mb-4">
+<span class="flex-shrink-0 w-2 h-2 rounded-full bg-error mt-1 animate-pulse"></span>
+<p class="text-sm font-semibold">Election results being finalized in three major districts; recount likely.</p>
+</div>
+<a class="text-xs font-bold text-primary underline underline-offset-2" href="#">Read Live Blog</a>
+</div>
+</div>
+<div class="lg:col-span-8">
+<div class="divide-y divide-outline-variant/30">
+<!-- List Item 1 -->
+<div class="py-6 flex justify-between items-start group cursor-pointer">
+<div class="max-w-xl">
+<span class="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-2 block">10:42 AM • Politics</span>
+<h4 class="font-headline text-2xl font-bold group-hover:text-primary transition-colors">Supreme Court Overturns Decades-Old Zoning Regulation.</h4>
+</div>
+<span class="material-symbols-outlined opacity-0 group-hover:opacity-100 transition-opacity translate-y-2" data-icon="chevron_right">chevron_right</span>
+</div>
+<!-- List Item 2 -->
+<div class="py-6 flex justify-between items-start group cursor-pointer">
+<div class="max-w-xl">
+<span class="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-2 block">09:15 AM • Tech</span>
+<h4 class="font-headline text-2xl font-bold group-hover:text-primary transition-colors">Global Semiconductor Shortage Expected to Persist Through Q4.</h4>
+</div>
+<span class="material-symbols-outlined opacity-0 group-hover:opacity-100 transition-opacity translate-y-2" data-icon="chevron_right">chevron_right</span>
+</div>
+<!-- List Item 3 -->
+<div class="py-6 flex justify-between items-start group cursor-pointer">
+<div class="max-w-xl">
+<span class="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-2 block">08:30 AM • Health</span>
+<h4 class="font-headline text-2xl font-bold group-hover:text-primary transition-colors">Breakthrough in Synthetic Protein Research Announced.</h4>
+</div>
+<span class="material-symbols-outlined opacity-0 group-hover:opacity-100 transition-opacity translate-y-2" data-icon="chevron_right">chevron_right</span>
+</div>
+<!-- List Item 4 -->
+<div class="py-6 flex justify-between items-start group cursor-pointer">
+<div class="max-w-xl">
+<span class="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-2 block">06:00 AM • Opinion</span>
+<h4 class="font-headline text-2xl font-bold group-hover:text-primary transition-colors">The Slow Death of the Urban Center is Greatly Exaggerated.</h4>
+</div>
+<span class="material-symbols-outlined opacity-0 group-hover:opacity-100 transition-opacity translate-y-2" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-zinc-200 dark:border-zinc-800 mt-20 bg-zinc-100 dark:bg-zinc-950">
+<div class="w-full px-8 py-16 grid grid-cols-1 md:grid-cols-4 gap-12 max-w-7xl mx-auto">
+<div class="md:col-span-1">
+<h2 class="font-serif text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">The Editorial Authority</h2>
+<p class="text-on-surface-variant text-xs leading-loose font-body opacity-80">
+                    Setting the agenda for the global conversation through rigorous reporting and fearless analysis since 1994.
+                </p>
+<div class="flex gap-4 mt-6">
+<span class="material-symbols-outlined text-zinc-500 cursor-pointer hover:text-primary transition-colors" data-icon="share">share</span>
+<span class="material-symbols-outlined text-zinc-500 cursor-pointer hover:text-primary transition-colors" data-icon="rss_feed">rss_feed</span>
+<span class="material-symbols-outlined text-zinc-500 cursor-pointer hover:text-primary transition-colors" data-icon="mail">mail</span>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<h3 class="font-sans text-xs uppercase tracking-widest font-black text-red-900 dark:text-red-500">The Newsroom</h3>
+<nav class="flex flex-col gap-2">
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-red-700 text-xs font-label" href="#">About Us</a>
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-red-700 text-xs font-label" href="#">Ethics Code</a>
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-red-700 text-xs font-label" href="#">Corrections</a>
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-red-700 text-xs font-label" href="#">Newsletters</a>
+</nav>
+</div>
+<div class="flex flex-col gap-4">
+<h3 class="font-sans text-xs uppercase tracking-widest font-black text-red-900 dark:text-red-500">Network</h3>
+<nav class="flex flex-col gap-2">
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-red-700 text-xs font-label" href="#">The Archive</a>
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-red-700 text-xs font-label" href="#">The Curator TV</a>
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-red-700 text-xs font-label" href="#">Editorial Events</a>
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-red-700 text-xs font-label" href="#">Advertise</a>
+</nav>
+</div>
+<div class="flex flex-col gap-4">
+<h3 class="font-sans text-xs uppercase tracking-widest font-black text-red-900 dark:text-red-500">Legal</h3>
+<nav class="flex flex-col gap-2">
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-red-700 text-xs font-label" href="#">Privacy Policy</a>
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-red-700 text-xs font-label" href="#">Terms of Service</a>
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-red-700 text-xs font-label" href="#">Cookie Policy</a>
+<a class="text-zinc-500 dark:text-zinc-400 hover:text-red-700 text-xs font-label" href="#">California Privacy</a>
+</nav>
+</div>
+</div>
+<div class="w-full px-8 py-8 border-t border-zinc-200 dark:border-zinc-800 text-center">
+<p class="font-sans text-xs uppercase tracking-widest text-zinc-500">© 2024 The Editorial Authority. Independent Journalism for the Digital Age.</p>
+</div>
+</footer>
+</body></html>
