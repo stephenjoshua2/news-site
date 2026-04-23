@@ -102,7 +102,7 @@ export function CommentSection({ storyId, initialComments, isAdmin }: CommentSec
     if (replyState.status === "success" && replyState.newComment) {
       setComments((prev) => [...prev, replyState.newComment!]);
       setHighlightedId(replyState.newComment.id);
-      handleReplyReset();
+      setReplyingTo(null);
       replyFormRef.current?.reset();
       setTimeout(() => {
         document.getElementById(`comment-${replyState.newComment!.id}`)?.scrollIntoView({

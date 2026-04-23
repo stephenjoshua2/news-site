@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     const supabase = createSupabaseServerClient();
 
     // Try RPC first (atomic), fall back to direct update
-    const { error: rpcError } = await supabase.rpc("increment_views", { story_id_input: storyId });
+    const { error: rpcError } = await (supabase as any).rpc("increment_views", { story_id_input: storyId });
     
     if (rpcError) {
       // Fallback: direct update if RPC function doesn't exist yet
