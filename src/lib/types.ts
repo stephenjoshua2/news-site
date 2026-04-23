@@ -137,7 +137,14 @@ export interface Database {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      increment_views: {
+        Args: {
+          story_id_input: string;
+        };
+        Returns: void;
+      };
+    };
     Enums: {
       story_status: StoryStatus;
     };
