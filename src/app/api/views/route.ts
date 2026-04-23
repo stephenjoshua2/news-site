@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { hasSupabaseEnv } from "@/lib/supabase/config";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
@@ -12,6 +13,10 @@ export async function POST(request: NextRequest) {
     const cookieName = `viewed_${storyId}`;
     if (request.cookies.get(cookieName)?.value === "true") {
       return NextResponse.json({ ok: true, skipped: true }); // Acknowledge smoothly without incrementing
+    }
+
+    if (!hasSupabaseEnv()) {
+      return NextResponse.json({ ok: true, skipped: true, reason: "missing-config" });
     }
 
     const supabase = createSupabaseServerClient();

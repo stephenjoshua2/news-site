@@ -1,11 +1,21 @@
 import Link from "next/link";
+import { hasSupabaseEnv } from "@/lib/supabase/config";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
 async function getSiteSettings() {
+  if (!hasSupabaseEnv()) {
+    return null;
+  }
+
   const supabase = createSupabaseServerClient();
-  const { data } = await supabase.from("site_settings").select("*").single();
+  const { data, error } = await supabase.from("site_settings").select("*").single();
+
+  if (error) {
+    return null;
+  }
+
   return data as any;
 }
 

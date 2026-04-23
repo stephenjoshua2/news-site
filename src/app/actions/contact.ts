@@ -1,5 +1,6 @@
 "use server";
 
+import { hasSupabaseEnv } from "@/lib/supabase/config";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function submitContactAction(formData: FormData) {
@@ -9,6 +10,13 @@ export async function submitContactAction(formData: FormData) {
 
   if (!name || !email || !message) {
     return { error: "Please fill out all fields." };
+  }
+
+  if (!hasSupabaseEnv()) {
+    return {
+      error:
+        "The newsroom backend is not configured yet. Add the required Supabase environment variables before using the contact desk.",
+    };
   }
 
   const supabase = createSupabaseServerClient();

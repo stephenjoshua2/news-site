@@ -38,6 +38,16 @@ on conflict (email) do nothing;
 
 7. Start the app with `npm run dev`.
 
+## Vercel deployment
+
+Before deploying to Vercel, add these same environment variables in the Vercel project settings for the target environment:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEWSROOM_ADMIN_EMAIL`
+
+Without them, public pages can still render some fallbacks, but Supabase-backed features such as auth, contact submission, analytics tracking, and dashboard access will not work correctly.
+
 ## Project structure
 
 - `src/app` contains the App Router pages and server actions.
