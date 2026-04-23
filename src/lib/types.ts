@@ -31,6 +31,7 @@ export type Story = {
   created_at: string;
   updated_at: string;
   published_at: string | null;
+  views: number;
 };
 
 export type Comment = {
@@ -38,7 +39,12 @@ export type Comment = {
   story_id: string;
   author_name: string;
   body: string;
+  parent_id: string | null;
   created_at: string;
+};
+
+export type CommentWithReplies = Comment & {
+  replies: Comment[];
 };
 
 export type StoryWithComments = Story & {
@@ -79,6 +85,7 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
           published_at?: string | null;
+          views?: number;
         };
         Update: {
           id?: string;
@@ -97,6 +104,7 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
           published_at?: string | null;
+          views?: number;
         };
         Relationships: [];
       };
@@ -107,6 +115,7 @@ export interface Database {
           story_id: string;
           author_name: string;
           body: string;
+          parent_id?: string | null;
           created_at?: string;
         };
         Update: {
@@ -114,6 +123,7 @@ export interface Database {
           story_id?: string;
           author_name?: string;
           body?: string;
+          parent_id?: string | null;
           created_at?: string;
         };
         Relationships: [

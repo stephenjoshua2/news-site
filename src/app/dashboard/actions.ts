@@ -382,7 +382,11 @@ export async function saveStoryAction(formData: FormData) {
   revalidatePath("/dashboard");
   revalidatePath(`/story/${selectedStory.id}`);
 
-  redirectToDashboard("notice=story-saved");
+  if (nextStatus === "published") {
+    redirect(`/dashboard/stories?notice=story-published`);
+  } else {
+    redirect(`/dashboard/stories?notice=draft-saved`);
+  }
 }
 
 export async function deleteStoryAction(formData: FormData) {
@@ -444,5 +448,5 @@ export async function deleteStoryAction(formData: FormData) {
   revalidatePath("/dashboard");
   revalidatePath(`/story/${storyId}`);
 
-  redirectToDashboard("notice=story-deleted");
+  redirect(`/dashboard/stories?notice=story-deleted`);
 }

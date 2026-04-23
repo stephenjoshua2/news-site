@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Literata, Source_Sans_3 } from "next/font/google";
+import { Newsreader, Inter } from "next/font/google";
 
 import { Navbar } from "@/components/Navbar";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -7,13 +7,14 @@ import { getCurrentAdminSession } from "@/lib/auth";
 
 import "./globals.css";
 
-const editorialFont = Literata({
+const editorialFont = Newsreader({
   subsets: ["latin"],
-  variable: "--font-editorial",
+  variable: "--font-headline",
   display: "swap",
+  style: ["normal", "italic"],
 });
 
-const bodyFont = Source_Sans_3({
+const bodyFont = Inter({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",

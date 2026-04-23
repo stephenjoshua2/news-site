@@ -199,11 +199,14 @@ with check (
   bucket_id = 'story-images'
   and public.is_newsroom_admin()
   and (storage.foldername(name))[1] = auth.uid()::text
-  and exists (
-    select 1
-    from public.stories
-    where stories.id::text = (storage.foldername(name))[2]
-      and stories.author_id = auth.uid()
+  and (
+    array_length(storage.foldername(name), 1) < 2
+    or exists (
+      select 1
+      from public.stories
+      where stories.id::text = (storage.foldername(name))[2]
+        and stories.author_id = auth.uid()
+    )
   )
 );
 
@@ -221,11 +224,14 @@ with check (
   bucket_id = 'story-images'
   and public.is_newsroom_admin()
   and (storage.foldername(name))[1] = auth.uid()::text
-  and exists (
-    select 1
-    from public.stories
-    where stories.id::text = (storage.foldername(name))[2]
-      and stories.author_id = auth.uid()
+  and (
+    array_length(storage.foldername(name), 1) < 2
+    or exists (
+      select 1
+      from public.stories
+      where stories.id::text = (storage.foldername(name))[2]
+        and stories.author_id = auth.uid()
+    )
   )
 );
 
@@ -249,11 +255,14 @@ with check (
   bucket_id = 'story-videos'
   and public.is_newsroom_admin()
   and (storage.foldername(name))[1] = auth.uid()::text
-  and exists (
-    select 1
-    from public.stories
-    where stories.id::text = (storage.foldername(name))[2]
-      and stories.author_id = auth.uid()
+  and (
+    array_length(storage.foldername(name), 1) < 2
+    or exists (
+      select 1
+      from public.stories
+      where stories.id::text = (storage.foldername(name))[2]
+        and stories.author_id = auth.uid()
+    )
   )
 );
 
@@ -271,11 +280,14 @@ with check (
   bucket_id = 'story-videos'
   and public.is_newsroom_admin()
   and (storage.foldername(name))[1] = auth.uid()::text
-  and exists (
-    select 1
-    from public.stories
-    where stories.id::text = (storage.foldername(name))[2]
-      and stories.author_id = auth.uid()
+  and (
+    array_length(storage.foldername(name), 1) < 2
+    or exists (
+      select 1
+      from public.stories
+      where stories.id::text = (storage.foldername(name))[2]
+        and stories.author_id = auth.uid()
+    )
   )
 );
 
