@@ -2,12 +2,26 @@
 
 import { revalidatePath } from "next/cache";
 
+import { requireAdminUser } from "@/lib/auth";
+import {
+  enforceSubmissionThrottle,
+  enforceDurableSubmissionThrottle,
+  moderateSubmissionText,
+  normalizeSubmissionText,
+} from "@/lib/abuse-protection";
 import { hasSupabaseEnv } from "@/lib/supabase/config";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function readText(formData: FormData, key: string): string {
   const value = formData.get(key);
   return typeof value === "string" ? value.trim() : "";
+}
+
+function isUuid(value: string): boolean {
+  return UUID_PATTERN.test(value);
 }
 
 export type CommentActionState = {
@@ -28,12 +42,16 @@ export async function addCommentAction(
   formData: FormData,
 ): Promise<CommentActionState> {
   const storyId = readText(formData, "story_id");
-  const authorName = readText(formData, "author_name");
-  const body = readText(formData, "body");
+  const authorName = normalizeSubmissionText(readText(formData, "author_name"));
+  const body = normalizeSubmissionText(readText(formData, "body"));
   const parentId = readText(formData, "parent_id") || null;
 
-  if (!storyId) {
+  if (!isUuid(storyId)) {
     return { status: "error", message: "Invalid story." };
+  }
+
+  if (parentId && !isUuid(parentId)) {
+    return { status: "error", message: "The comment you're replying to is invalid." };
   }
 
   if (!hasSupabaseEnv()) {
@@ -48,7 +66,37 @@ export async function addCommentAction(
     return { status: "error", message: "Comment must be between 2 and 1000 characters." };
   }
 
+  const moderation = moderateSubmissionText(`${authorName}\n${body}`, { maxLinks: 2 });
+  if (!moderation.ok) {
+    return { status: "error", message: moderation.message };
+  }
+
+  const throttle = enforceSubmissionThrottle({
+    scope: "comment",
+    normalizedText: `${storyId}:${parentId ?? ""}:${authorName}:${body}`,
+    cooldownSeconds: 45,
+    windowSeconds: 10 * 60,
+    maxSubmissions: 5,
+  });
+
+  if (!throttle.ok) {
+    return { status: "error", message: throttle.message };
+  }
+
   const supabase = createSupabaseServerClient();
+
+  const durableThrottle = await enforceDurableSubmissionThrottle({
+    supabase,
+    scope: "comment",
+    normalizedText: `${storyId}:${parentId ?? ""}:${authorName}:${body}`,
+    cooldownSeconds: 45,
+    windowSeconds: 10 * 60,
+    maxSubmissions: 5,
+  });
+
+  if (!durableThrottle.ok) {
+    return { status: "error", message: durableThrottle.message };
+  }
 
   // Verify story exists and is published
   try {
@@ -63,13 +111,14 @@ export async function addCommentAction(
       return { status: "error", message: "This story is no longer accepting comments." };
     }
 
-    // If replying, verify parent comment exists
+    // If replying, verify the parent is a top-level comment on this story.
     if (parentId) {
       const { data: parentComment } = await supabase
         .from("comments")
-        .select("id")
+        .select("id, parent_id")
         .eq("id", parentId)
         .eq("story_id", storyId)
+        .is("parent_id", null)
         .single();
 
       if (!parentComment) {
@@ -110,8 +159,21 @@ export async function deleteCommentAction(commentId: string, storyId: string) {
     return { status: "error", message: "Backend not configured" };
   }
 
+  if (!isUuid(commentId) || !isUuid(storyId)) {
+    return { status: "error", message: "Invalid comment." };
+  }
+
   const supabase = createSupabaseServerClient();
-  const { error } = await supabase.from("comments").delete().eq("id", commentId);
+  const user = await requireAdminUser();
+  const removedAt = new Date().toISOString();
+  const { error } = await supabase
+    .from("comments")
+    .update({
+      deleted_at: removedAt,
+      deleted_by: user.id,
+      moderation_reason: "Removed by newsroom moderator",
+    })
+    .or(`id.eq.${commentId},parent_id.eq.${commentId}`);
 
   if (error) {
     console.error("Delete comment error:", error);

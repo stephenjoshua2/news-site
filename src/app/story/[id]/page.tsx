@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { CommentSection } from "@/components/CommentSection";
@@ -6,6 +7,7 @@ import { StatePanel } from "@/components/StatePanel";
 import { SubscribeForm } from "@/components/SubscribeForm";
 import { ViewTracker } from "@/components/ViewTracker";
 import { getCurrentAdminSession } from "@/lib/auth";
+import { getCanonicalUrl, SITE_NAME, toJsonLd } from "@/lib/site";
 import { hasSupabaseEnv } from "@/lib/supabase/config";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Comment, Story } from "@/lib/types";
@@ -44,6 +46,52 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
   dateStyle: "medium",
 });
 
+async function getPublishedStory(id: string): Promise<Story | null> {
+  if (!hasSupabaseEnv()) {
+    return null;
+  }
+
+  const supabase = createSupabaseServerClient();
+  const { data } = await supabase
+    .from("stories")
+    .select("*")
+    .eq("id", id)
+    .eq("status", "published")
+    .single();
+
+  return data;
+}
+
+export async function generateMetadata({ params }: StoryPageProps): Promise<Metadata> {
+  const story = await getPublishedStory(params.id);
+
+  if (!story) {
+    return {
+      title: "Story not found",
+    };
+  }
+
+  const canonical = `/story/${story.id}`;
+
+  return {
+    title: story.title,
+    description: story.excerpt,
+    alternates: {
+      canonical,
+    },
+    openGraph: {
+      type: "article",
+      title: story.title,
+      description: story.excerpt,
+      url: canonical,
+      publishedTime: story.published_at ?? story.created_at,
+      modifiedTime: story.updated_at,
+      section: story.category,
+      images: story.featured_image_url ? [{ url: story.featured_image_url }] : undefined,
+    },
+  };
+}
+
 async function getStoryPageData(id: string): Promise<StoryPageData> {
   const { isAdmin } = await getCurrentAdminSession();
   const supabase = createSupabaseServerClient();
@@ -80,6 +128,7 @@ async function getStoryPageData(id: string): Promise<StoryPageData> {
     .from("comments")
     .select("*")
     .eq("story_id", id)
+    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   const { data: relatedStories } = await supabase
@@ -148,6 +197,27 @@ export default async function StoryPage({
   }
 
   const primaryDate = new Date(story.published_at ?? story.created_at);
+  const storyUrl = getCanonicalUrl(`/story/${story.id}`);
+  const newsArticleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    headline: story.title,
+    description: story.excerpt,
+    datePublished: story.published_at ?? story.created_at,
+    dateModified: story.updated_at,
+    mainEntityOfPage: storyUrl,
+    url: storyUrl,
+    articleSection: story.category,
+    author: {
+      "@type": "Organization",
+      name: SITE_NAME,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: SITE_NAME,
+    },
+    image: story.featured_image_url ? [story.featured_image_url] : undefined,
+  };
   const articleParagraphs = story.content
     .split(/\n{2,}/)
     .map((paragraph) => paragraph.trim())
@@ -155,6 +225,10 @@ export default async function StoryPage({
 
   return (
     <div className="article-page bg-surface">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: toJsonLd(newsArticleJsonLd) }}
+      />
       <ViewTracker storyId={story.id} />
       {/* Article Hero */}
       <div className="article-hero bg-surface-strong">

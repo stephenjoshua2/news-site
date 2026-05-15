@@ -9,6 +9,8 @@ import {
   MAX_VIDEO_FILE_SIZE,
   STORY_IMAGE_BUCKET,
   STORY_VIDEO_BUCKET,
+  hasAllowedImageSignature,
+  hasAllowedVideoSignature,
   isAllowedImageType,
   isAllowedVideoType,
   isValidHttpUrl,
@@ -32,7 +34,13 @@ function isProvidedFile(value: FormDataEntryValue | null): value is File {
 }
 
 function sanitizeFileName(fileName: string): string {
-  return fileName.toLowerCase().replace(/[^a-z0-9._-]+/g, "-");
+  return (
+    fileName
+      .toLowerCase()
+      .replace(/[^a-z0-9._-]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .replace(/^\.+/, "") || "upload"
+  );
 }
 
 function redirectToDashboard(search: string): never {
@@ -74,10 +82,10 @@ async function uploadStorageObject(
     await removeStorageObject(supabase, bucket, existingPath);
   }
 
-  const objectPath = `${userId}/${storyId}/${Date.now()}-${sanitizeFileName(file.name)}`;
+  const objectPath = `${userId}/${storyId}/${crypto.randomUUID()}-${sanitizeFileName(file.name)}`;
   const { error } = await supabase.storage.from(bucket).upload(objectPath, file, {
     cacheControl: "3600",
-    upsert: true,
+    upsert: false,
     contentType: file.type || undefined,
   });
 
@@ -194,6 +202,10 @@ export async function saveStoryAction(formData: FormData) {
     if (featuredImageFile.size > MAX_IMAGE_FILE_SIZE) {
       redirectToDashboard("error=image-size");
     }
+
+    if (!(await hasAllowedImageSignature(featuredImageFile))) {
+      redirectToDashboard("error=image-type");
+    }
   }
 
   if (isProvidedFile(videoFile)) {
@@ -203,6 +215,10 @@ export async function saveStoryAction(formData: FormData) {
 
     if (videoFile.size > MAX_VIDEO_FILE_SIZE) {
       redirectToDashboard("error=video-size");
+    }
+
+    if (!(await hasAllowedVideoSignature(videoFile))) {
+      redirectToDashboard("error=video-type");
     }
   }
 

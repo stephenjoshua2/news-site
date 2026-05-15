@@ -29,6 +29,7 @@ async function getStoriesData(userId: string) {
   const { data: commentRows, error: commentsError } = await supabase
     .from("comments")
     .select("story_id")
+    .is("deleted_at", null)
     .in("story_id", storyIds);
 
   const commentCountsByStory = (commentRows || []).reduce<Record<string, number>>((counts, row) => {
@@ -116,7 +117,7 @@ export default async function StoriesPage({ searchParams }: StoriesPageProps) {
       <div id="new-story" className="w-full">
          <div className="bg-surface p-8 pb-4 rounded-t border border-b-0 border-border border-l-4 border-l-primary">
             <h2 className="font-headline text-3xl font-black mb-2">Create a New Story</h2>
-            <p className="text-sm text-muted font-medium">Drafting automatically saves securely to the editorial workspace.</p>
+            <p className="text-sm text-muted font-medium">Drafts are saved to the editorial workspace.</p>
          </div>
          <div className="bg-surface p-8 pt-0 rounded-b border border-t-0 border-border border-l-4 border-l-primary">
            <StoryForm action={saveStoryAction} title="" description="" />

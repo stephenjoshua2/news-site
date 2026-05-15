@@ -72,9 +72,7 @@ export function Navbar({ isAdmin }: NavbarProps) {
             <div className="navbar-secondary-actions">
               {isAdmin ? (
                 <Link href="/dashboard" className="btn-login-utility">Dashboard</Link>
-              ) : (
-                <Link href="/login" className="btn-login-utility">Editor Access</Link>
-              )}
+              ) : null}
             </div>
           </div>
 

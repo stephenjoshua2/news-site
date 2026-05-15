@@ -19,7 +19,7 @@ export default function ContactPage() {
         setMessage(result.error);
       } else {
         setStatus("success");
-        setMessage("Thank you. Your message has been securely submitted to the newsroom.");
+        setMessage("Thank you. Your message has been submitted to the newsroom.");
       }
     });
   }
@@ -30,10 +30,10 @@ export default function ContactPage() {
         <header className="mb-16 border-b border-border pb-12">
           <span className="bg-primary text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest">Connect</span>
           <h1 className="mt-6 text-5xl md:text-7xl font-headline font-black leading-tight tracking-tight text-on-surface">
-            Secure Contact Desk
+            Contact Desk
           </h1>
           <p className="mt-6 text-muted text-xl uppercase tracking-widest font-bold">
-            Send tips, inquiries, and secure communication directly to the newsroom.
+            Send tips, corrections, inquiries, and reader feedback directly to the newsroom.
           </p>
         </header>
 
@@ -55,7 +55,6 @@ export default function ContactPage() {
                     name="name"
                     required
                     className="w-full bg-surface-muted border-none p-4 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
-                    placeholder="Jane Doe"
                   />
                 </div>
                 <div>
@@ -66,7 +65,6 @@ export default function ContactPage() {
                     name="email"
                     required
                     className="w-full bg-surface-muted border-none p-4 text-sm focus:ring-2 focus:ring-primary focus:outline-none"
-                    placeholder="jane@example.com"
                   />
                 </div>
                 <div>
@@ -77,7 +75,7 @@ export default function ContactPage() {
                     required
                     rows={6}
                     className="w-full bg-surface-muted border-none p-4 text-sm focus:ring-2 focus:ring-primary focus:outline-none resize-y"
-                    placeholder="Write securely..."
+                    placeholder="Write your message..."
                   ></textarea>
                 </div>
                 
@@ -99,15 +97,10 @@ export default function ContactPage() {
               <h4 className="font-bold uppercase text-[10px] tracking-widest text-primary mb-6 border-b border-border pb-2 inline-block">Direct Contact</h4>
               <div className="space-y-6">
                 <div>
-                  <div className="font-bold text-on-surface mb-1">Email directly</div>
-                  <a href="mailto:enemcdickson@gmail.com" className="text-sm text-primary hover:underline">enemcdickson@gmail.com</a>
-                </div>
-                <div>
-                  <div className="font-bold text-on-surface mb-1">Security Standards</div>
+                  <div className="font-bold text-on-surface mb-1">Sensitive information</div>
                   <p className="text-xs text-muted leading-relaxed">
-                    This form securely uploads to our protected editorial database. 
-                    We do not share your email with third-party advertisers. 
-                    If you have a sensitive tip, please consider using Signal.
+                    This form is for general newsroom contact and is not an encrypted secure-drop system.
+                    Do not send highly sensitive source material here unless the newsroom has arranged a safer channel with you.
                   </p>
                 </div>
               </div>

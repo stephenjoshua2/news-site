@@ -26,7 +26,7 @@ export async function SiteFooter() {
         <div className="footer-brand-col">
           <h2 className="font-headline text-2xl font-bold footer-brand-title">Signal Press</h2>
           <p className="footer-mission-text opacity-80">
-            Setting the agenda for the global conversation through rigorous reporting and fearless analysis since 1994.
+            Independent Nigerian digital journalism focused on public affairs, accountability, business, technology, and culture.
           </p>
           <div className="footer-socials">
             {settings?.social_twitter && (
@@ -45,7 +45,8 @@ export async function SiteFooter() {
           <h3 className="footer-nav-title">The Newsroom</h3>
           <nav className="footer-nav-links">
             <Link href="/about" className="footer-link">About Us</Link>
-            <Link href="/#ethics" className="footer-link">Ethics Code</Link>
+            <Link href="/editorial-standards" className="footer-link">Editorial Standards</Link>
+            <Link href="/corrections" className="footer-link">Corrections</Link>
             <Link href="#newsletter" className="footer-link">Newsletters</Link>
           </nav>
         </div>
@@ -55,19 +56,15 @@ export async function SiteFooter() {
           <nav className="footer-nav-links">
             <Link href="/#news-archive" className="footer-link">The Archive</Link>
             <Link href="/contact" className="footer-link">Contact Desk</Link>
-            {/* Future Features */}
-            <span className="footer-link-disabled">Editorial Events</span>
-            <span className="footer-link-disabled">Advertise</span>
           </nav>
         </div>
 
         <div className="footer-nav-col">
           <h3 className="footer-nav-title">Legal</h3>
           <nav className="footer-nav-links">
-            <span className="footer-link-disabled">Privacy Policy</span>
-            <span className="footer-link-disabled">Terms of Service</span>
+            <Link href="/privacy" className="footer-link">Privacy Policy</Link>
+            <Link href="/terms" className="footer-link">Terms of Use</Link>
             <span className="footer-link-disabled">Cookie Policy</span>
-            <Link href="/login" className="footer-link">Editor Login</Link>
           </nav>
         </div>
       </div>

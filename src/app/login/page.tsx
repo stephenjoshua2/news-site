@@ -33,24 +33,24 @@ export default function LoginPage({ searchParams }: LoginPageProps) {
 
           <div className="hero-text my-auto">
              <h1 className="font-headline text-5xl md:text-7xl font-black leading-none mb-6">
-                 Editor<br/><span className="text-primary italic">Access</span>
+                 Staff<br/><span className="text-primary italic">Sign-in</span>
              </h1>
              <div className="w-16 h-2 bg-primary mb-6"></div>
              <p className="max-w-sm text-lg text-muted font-medium leading-relaxed">
-                 The single-pane dashboard for investigative reporting, story publishing, and archiving.
+                 Authorized newsroom staff can sign in to manage publishing and site operations.
              </p>
           </div>
           
           <div className="footer-note hidden md:block">
-             <p className="text-xs text-muted opacity-50 uppercase tracking-widest font-bold">Encrypted Session Area</p>
+             <p className="text-xs text-muted opacity-50 uppercase tracking-widest font-bold">Authorized Staff Only</p>
           </div>
       </div>
       
       <div className="md:w-1/2 bg-white p-8 md:p-20 flex items-center justify-center min-h-[60vh] md:min-h-screen">
          <div className="w-full max-w-md">
              <div className="mb-12">
-                <span className="bg-surface-muted text-primary text-[10px] uppercase tracking-widest font-bold px-3 py-1 mb-4 inline-block border border-border">Sentinel Interface</span>
-                <h2 className="font-headline text-3xl font-bold">Secure Login</h2>
+                <span className="bg-surface-muted text-primary text-[10px] uppercase tracking-widest font-bold px-3 py-1 mb-4 inline-block border border-border">Newsroom Dashboard</span>
+                <h2 className="font-headline text-3xl font-bold">Staff Login</h2>
              </div>
              
              <AuthForm

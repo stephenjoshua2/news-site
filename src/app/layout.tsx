@@ -4,6 +4,7 @@ import { Newsreader, Inter } from "next/font/google";
 import { Navbar } from "@/components/Navbar";
 import { SiteFooter } from "@/components/SiteFooter";
 import { getCurrentAdminSession } from "@/lib/auth";
+import { getSiteUrl, SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
 
 import "./globals.css";
 
@@ -21,12 +22,22 @@ const bodyFont = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(getSiteUrl()),
   title: {
-    default: "The Newsroom",
-    template: "%s | The Newsroom",
+    default: SITE_NAME,
+    template: `%s | ${SITE_NAME}`,
   },
-  description:
-    "A professional single-admin newsroom built with Next.js 14 and Supabase.",
+  description: SITE_DESCRIPTION,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    url: "/",
+  },
 };
 
 export default async function RootLayout({

@@ -3,6 +3,23 @@ import { redirect } from "next/navigation";
 import { isAdminEmail, hasSupabaseEnv } from "@/lib/supabase/config";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+async function hasDatabaseAdminRow(
+  supabase: ReturnType<typeof createSupabaseServerClient>,
+  email?: string | null,
+) {
+  if (!isAdminEmail(email)) {
+    return false;
+  }
+
+  const { data, error } = await (supabase as any)
+    .from("admin_users")
+    .select("email")
+    .eq("email", email?.trim().toLowerCase())
+    .maybeSingle();
+
+  return !error && Boolean(data);
+}
+
 export async function getCurrentAdminSession() {
   if (!hasSupabaseEnv()) {
     return {
@@ -16,9 +33,11 @@ export async function getCurrentAdminSession() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const isAdmin = await hasDatabaseAdminRow(supabase, user?.email);
+
   return {
     user,
-    isAdmin: isAdminEmail(user?.email),
+    isAdmin,
   };
 }
 
@@ -33,7 +52,7 @@ export async function requireAdminUser() {
     error,
   } = await supabase.auth.getUser();
 
-  if (error || !user || !isAdminEmail(user.email)) {
+  if (error || !user || !(await hasDatabaseAdminRow(supabase, user.email))) {
     redirect("/login?error=admin-required");
   }
 

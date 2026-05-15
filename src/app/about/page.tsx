@@ -32,26 +32,26 @@ export default async function AboutPage() {
                   The Newsroom Desk
                </h1>
                <div className="text-muted text-xl uppercase tracking-widest font-bold font-sans">
-                  Solo Editorial & Documentary Coverage
+                  Independent Nigerian Digital Journalism
                </div>
              </div>
 
              <article className="prose prose-stone max-w-none prose-lg">
                 <p className="font-headline text-2xl italic text-on-surface leading-relaxed border-b border-border pb-8">
-                   Welcome to the newsroom. This platform is an independent journalism endeavor producing rigorous reporting, structural investigations, and cultural analysis.
+                   Signal Press is an independent Nigerian digital publication focused on public affairs, accountability, business, technology, and culture.
                 </p>
                 <div className="mt-8 text-on-surface text-lg leading-loose whitespace-pre-wrap">
-                   {settings?.author_bio || "The Lead Editorial desk operates this publication autonomously. We focus on clear investigations and verified news items that matter."}
+                   {settings?.author_bio || "The newsroom focuses on verified reporting, clear analysis, and accountable public-interest journalism for Nigerian and global readers."}
                 </div>
                 
                 <div className="mt-16 bg-surface-muted p-8 rounded-lg border-l-4 border-border">
                   <h3 className="font-bold uppercase tracking-widest text-sm text-primary mb-4">What This Publication Covers</h3>
                   <ul className="list-disc pl-5 space-y-2 text-on-surface-variant font-medium">
-                    <li>Long-form Investigations</li>
-                    <li>Political Analysis and Geopolitics</li>
-                    <li>Structural Business Reporting</li>
-                    <li>Technology and Future Infrastructure</li>
-                    <li>Culture and Information Architecture</li>
+                    <li>Public-interest reporting and accountability</li>
+                    <li>Nigerian politics, governance, and institutions</li>
+                    <li>Business, technology, and infrastructure</li>
+                    <li>Culture, society, and information ecosystems</li>
+                    <li>Corrections, transparency, and reader accountability</li>
                   </ul>
                 </div>
              </article>

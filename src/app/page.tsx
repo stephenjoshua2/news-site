@@ -93,7 +93,6 @@ export default async function HomePage() {
     return (
       <div className="home-container">
         <StatePanel
-          actions={<Link className="btn-utility p-3" href="/login">Editor login</Link>}
           description="The editor can sign in, create a story, and publish it to make it appear here for readers."
           eyebrow="No Stories Yet"
           title="No published stories are live right now"

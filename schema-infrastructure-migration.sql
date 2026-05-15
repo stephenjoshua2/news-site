@@ -46,7 +46,10 @@ CREATE TABLE IF NOT EXISTS public.contact_messages (
   email text NOT NULL,
   message text NOT NULL,
   created_at timestamptz NOT NULL DEFAULT timezone('utc', now()),
-  status text NOT NULL DEFAULT 'unread'
+  status text NOT NULL DEFAULT 'unread',
+  CONSTRAINT contact_messages_name_length CHECK (char_length(trim(name)) BETWEEN 2 AND 120),
+  CONSTRAINT contact_messages_email_length CHECK (char_length(trim(email)) BETWEEN 5 AND 254),
+  CONSTRAINT contact_messages_message_length CHECK (char_length(trim(message)) BETWEEN 10 AND 4000)
 );
 
 ALTER TABLE public.contact_messages ENABLE ROW LEVEL SECURITY;
@@ -78,4 +81,3 @@ ON public.comments
 FOR DELETE
 TO authenticated
 USING (public.is_newsroom_admin());
-

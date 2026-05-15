@@ -41,6 +41,9 @@ export type Comment = {
   body: string;
   parent_id: string | null;
   created_at: string;
+  deleted_at?: string | null;
+  deleted_by?: string | null;
+  moderation_reason?: string | null;
 };
 
 export type CommentWithReplies = Comment & {
@@ -117,6 +120,9 @@ export interface Database {
           body: string;
           parent_id?: string | null;
           created_at?: string;
+          deleted_at?: string | null;
+          deleted_by?: string | null;
+          moderation_reason?: string | null;
         };
         Update: {
           id?: string;
@@ -125,6 +131,9 @@ export interface Database {
           body?: string;
           parent_id?: string | null;
           created_at?: string;
+          deleted_at?: string | null;
+          deleted_by?: string | null;
+          moderation_reason?: string | null;
         };
         Relationships: [
           {

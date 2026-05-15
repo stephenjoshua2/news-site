@@ -49,6 +49,7 @@ async function getDashboardData(userId: string) {
   const { data: commentRows, error: commentsError } = await supabase
     .from("comments")
     .select("story_id")
+    .is("deleted_at", null)
     .in("story_id", storyIds);
 
   if (commentsError || !commentRows) {

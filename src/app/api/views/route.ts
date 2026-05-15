@@ -2,10 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { hasSupabaseEnv } from "@/lib/supabase/config";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 export async function POST(request: NextRequest) {
   try {
     const { storyId } = await request.json();
-    if (!storyId || typeof storyId !== "string") {
+    if (!storyId || typeof storyId !== "string" || !UUID_PATTERN.test(storyId)) {
       return NextResponse.json({ error: "Missing storyId" }, { status: 400 });
     }
 

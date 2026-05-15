@@ -9,6 +9,7 @@ CREATE OR REPLACE FUNCTION public.increment_views(story_id_input uuid)
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
   UPDATE public.stories

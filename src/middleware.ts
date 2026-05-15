@@ -57,7 +57,17 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const adminSignedIn = isAdminEmail(user?.email);
+  let adminSignedIn = false;
+
+  if (isAdminEmail(user?.email)) {
+    const { data: adminRow } = await (supabase as any)
+      .from("admin_users")
+      .select("email")
+      .eq("email", user?.email?.trim().toLowerCase() ?? "")
+      .maybeSingle();
+
+    adminSignedIn = Boolean(adminRow);
+  }
 
   if (isDashboardRoute && !adminSignedIn) {
     const loginUrl = request.nextUrl.clone();

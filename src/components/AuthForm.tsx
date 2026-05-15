@@ -23,34 +23,32 @@ export function AuthForm({
 
       <form action={action} className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
-          <label htmlFor="email" className="font-bold text-[10px] uppercase tracking-widest text-muted">Journalist email</label>
+          <label htmlFor="email" className="font-bold text-[10px] uppercase tracking-widest text-muted">Staff email</label>
           <input
             id="email"
             name="email"
             type="email"
             autoComplete="email"
             required
-            placeholder="editor@therecord.com"
             className="w-full bg-surface-muted border-none p-4 focus:ring-2 focus:ring-primary focus:outline-none transition-shadow"
           />
         </div>
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="password" className="font-bold text-[10px] uppercase tracking-widest text-muted">Secure Password</label>
+          <label htmlFor="password" className="font-bold text-[10px] uppercase tracking-widest text-muted">Password</label>
           <input
             id="password"
             name="password"
             type="password"
             autoComplete="current-password"
             required
-            placeholder="Enter secure password"
             className="w-full bg-surface-muted border-none p-4 focus:ring-2 focus:ring-primary focus:outline-none transition-shadow"
           />
         </div>
 
         <SubmitButton 
            className="bg-primary text-on-primary w-full py-4 uppercase font-bold tracking-widest text-xs hover:bg-accent-strong transition-colors mt-4" 
-           pendingLabel="Authenticating..." 
+           pendingLabel="Signing in..."
            type="submit"
         >
           Sign In

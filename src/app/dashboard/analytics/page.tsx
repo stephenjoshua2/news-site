@@ -28,6 +28,7 @@ async function getAnalyticsData(userId: string) {
   const { data: commentRows } = await supabase
     .from("comments")
     .select("story_id")
+    .is("deleted_at", null)
     .in("story_id", storyIds);
 
   const commentCountsByStory = (commentRows || []).reduce<Record<string, number>>((acc, row) => {
