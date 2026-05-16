@@ -166,18 +166,34 @@ export async function deleteCommentAction(commentId: string, storyId: string) {
   const supabase = createSupabaseServerClient();
   const user = await requireAdminUser();
   const removedAt = new Date().toISOString();
-  const { error } = await supabase
+  const { data: removedRows, error } = await supabase
     .from("comments")
     .update({
       deleted_at: removedAt,
       deleted_by: user.id,
       moderation_reason: "Removed by newsroom moderator",
     })
-    .or(`id.eq.${commentId},parent_id.eq.${commentId}`);
+    .eq("story_id", storyId)
+    .or(`id.eq.${commentId},parent_id.eq.${commentId}`)
+    .select("id");
 
   if (error) {
     console.error("Delete comment error:", error);
-    return { status: "error", message: "Failed to delete comment" };
+    if (/deleted_at|deleted_by|moderation_reason/i.test(error.message)) {
+      return {
+        status: "error",
+        message: "Comment moderation fields are missing in the database. Apply the comment hardening migration.",
+      };
+    }
+
+    return { status: "error", message: "Failed to delete comment. Check the admin comment moderation policy." };
+  }
+
+  if (!removedRows || removedRows.length === 0) {
+    return {
+      status: "error",
+      message: "Comment was not found for this story, or the admin moderation policy is not applied.",
+    };
   }
 
   revalidatePath(`/story/${storyId}`);

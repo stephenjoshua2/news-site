@@ -83,28 +83,28 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
          </div>
       )}
 
-      <div className="bg-surface p-8 rounded border border-border mb-8">
-         <h2 className="font-headline text-3xl font-bold mb-2">Editorial Dashboard</h2>
+      <div className="bg-surface p-5 sm:p-8 rounded border border-border mb-6 sm:mb-8">
+         <h2 className="font-headline text-2xl sm:text-3xl font-bold mb-2">Editorial Dashboard</h2>
          <p className="text-sm text-muted">Welcome back. Here is your platform overview.</p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8">
-         <div className="flex-1 bg-surface p-8 rounded border border-border flex flex-col justify-center relative overflow-hidden">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+         <div className="bg-surface p-5 sm:p-8 rounded border border-border flex flex-col justify-center relative overflow-hidden min-h-32">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
             <h4 className="font-bold text-xs uppercase tracking-widest text-muted mb-2">Total Stories</h4>
-            <div className="font-headline text-6xl font-black text-on-surface">{stories.length}</div>
+            <div className="font-headline text-5xl sm:text-6xl font-black text-on-surface">{stories.length}</div>
          </div>
-         <div className="flex-1 bg-surface p-8 rounded border border-border flex flex-col justify-center border-b-4 border-success">
+         <div className="bg-surface p-5 sm:p-8 rounded border border-border flex flex-col justify-center border-b-4 border-success min-h-32">
             <h4 className="font-bold text-xs uppercase tracking-widest text-muted mb-2">Published Live</h4>
-            <div className="font-headline text-5xl font-black text-on-surface">{publishedStories.length}</div>
+            <div className="font-headline text-4xl sm:text-5xl font-black text-on-surface">{publishedStories.length}</div>
          </div>
-         <div className="flex-1 bg-surface p-8 rounded border border-border flex flex-col justify-center border-b-4 border-warning">
+         <div className="bg-surface p-5 sm:p-8 rounded border border-border flex flex-col justify-center border-b-4 border-warning min-h-32">
             <h4 className="font-bold text-xs uppercase tracking-widest text-muted mb-2">Drafts Waiting</h4>
-            <div className="font-headline text-5xl font-black text-on-surface">{draftStories.length}</div>
+            <div className="font-headline text-4xl sm:text-5xl font-black text-on-surface">{draftStories.length}</div>
          </div>
-         <div className="flex-1 bg-surface p-8 rounded border border-border flex flex-col justify-center">
+         <div className="bg-surface p-5 sm:p-8 rounded border border-border flex flex-col justify-center min-h-32">
             <h4 className="font-bold text-xs uppercase tracking-widest text-muted mb-2">Engagement</h4>
-            <div className="font-headline text-5xl font-black text-primary">
+            <div className="font-headline text-4xl sm:text-5xl font-black text-primary">
                {commentsLoadFailed ? "-" : totalComments}
             </div>
          </div>

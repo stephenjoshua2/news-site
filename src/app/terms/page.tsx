@@ -7,11 +7,11 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="max-w-4xl mx-auto px-6 py-20">
-      <h1 className="font-headline text-5xl font-black mb-6">Terms of Use</h1>
-      <div className="prose prose-stone max-w-none text-on-surface">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20">
+      <h1 className="font-headline text-4xl sm:text-5xl font-black mb-6 leading-tight">Terms of Use</h1>
+      <div className="prose prose-stone max-w-none text-on-surface prose-p:leading-relaxed prose-headings:font-headline prose-headings:tracking-tight">
         <p>
-          By using Signal Press, you agree to use the site lawfully and to avoid
+          By using Frontline Daily, you agree to use the site lawfully and to avoid
           interfering with the publication, its readers, or its reporting.
         </p>
         <h2>Reader comments</h2>

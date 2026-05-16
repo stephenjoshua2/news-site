@@ -30,8 +30,8 @@ export default function SettingsForm({ settings }: SettingsProps) {
   }
 
   return (
-    <div className="bg-surface p-8 max-w-3xl mx-auto border border-border shadow-sm">
-      <h2 className="font-headline text-3xl font-bold mb-8">Platform Settings</h2>
+    <div className="bg-surface p-4 sm:p-6 lg:p-8 max-w-3xl mx-auto border border-border shadow-sm">
+      <h2 className="font-headline text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Platform Settings</h2>
 
       {status.type && (
         <div className={`mb-8 p-4 border-l-4 font-bold text-sm ${status.type === "error" ? "bg-danger-soft border-danger text-danger" : "bg-success-soft border-success text-success"}`}>
@@ -85,7 +85,7 @@ export default function SettingsForm({ settings }: SettingsProps) {
          </div>
 
          <SubmitButton 
-           className="bg-primary text-white font-bold text-xs px-8 py-4 uppercase tracking-widest"
+           className="bg-primary text-white font-bold text-xs px-8 py-4 uppercase tracking-widest w-full sm:w-auto min-h-11"
            pendingLabel="Saving..."
          >
            Save Settings

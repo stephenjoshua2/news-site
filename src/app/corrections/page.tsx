@@ -7,11 +7,11 @@ export const metadata: Metadata = {
 
 export default function CorrectionsPage() {
   return (
-    <div className="max-w-4xl mx-auto px-6 py-20">
-      <h1 className="font-headline text-5xl font-black mb-6">Corrections Policy</h1>
-      <div className="prose prose-stone max-w-none text-on-surface">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20">
+      <h1 className="font-headline text-4xl sm:text-5xl font-black mb-6 leading-tight">Corrections Policy</h1>
+      <div className="prose prose-stone max-w-none text-on-surface prose-p:leading-relaxed prose-headings:font-headline prose-headings:tracking-tight">
         <p>
-          Accuracy is central to public trust. Signal Press reviews credible
+          Accuracy is central to public trust. Frontline Daily reviews credible
           correction requests and updates stories when material facts are wrong,
           incomplete, or missing necessary context.
         </p>

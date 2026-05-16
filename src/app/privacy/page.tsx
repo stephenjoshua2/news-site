@@ -7,11 +7,11 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="max-w-4xl mx-auto px-6 py-20">
-      <h1 className="font-headline text-5xl font-black mb-6">Privacy Policy</h1>
-      <div className="prose prose-stone max-w-none text-on-surface">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20">
+      <h1 className="font-headline text-4xl sm:text-5xl font-black mb-6 leading-tight">Privacy Policy</h1>
+      <div className="prose prose-stone max-w-none text-on-surface prose-p:leading-relaxed prose-headings:font-headline prose-headings:tracking-tight">
         <p>
-          Signal Press collects only the information needed to publish the site,
+          Frontline Daily collects only the information needed to publish the site,
           receive reader messages, operate comments, measure article performance,
           and protect the newsroom from abuse.
         </p>

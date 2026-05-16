@@ -7,11 +7,11 @@ export const metadata: Metadata = {
 
 export default function EditorialStandardsPage() {
   return (
-    <div className="max-w-4xl mx-auto px-6 py-20">
-      <h1 className="font-headline text-5xl font-black mb-6">Editorial Standards</h1>
-      <div className="prose prose-stone max-w-none text-on-surface">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20">
+      <h1 className="font-headline text-4xl sm:text-5xl font-black mb-6 leading-tight">Editorial Standards</h1>
+      <div className="prose prose-stone max-w-none text-on-surface prose-p:leading-relaxed prose-headings:font-headline prose-headings:tracking-tight">
         <p>
-          Signal Press aims to publish independent journalism that is accurate,
+          Frontline Daily aims to publish independent journalism that is accurate,
           fair, clearly sourced, and accountable to readers.
         </p>
         <h2>Verification</h2>

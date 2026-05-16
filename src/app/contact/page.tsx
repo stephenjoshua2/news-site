@@ -26,26 +26,26 @@ export default function ContactPage() {
 
   return (
     <div className="contact-page bg-surface min-h-screen">
-      <main className="max-w-4xl mx-auto px-6 py-20">
-        <header className="mb-16 border-b border-border pb-12">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20">
+        <header className="mb-10 sm:mb-16 border-b border-border pb-8 sm:pb-12">
           <span className="bg-primary text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest">Connect</span>
-          <h1 className="mt-6 text-5xl md:text-7xl font-headline font-black leading-tight tracking-tight text-on-surface">
+          <h1 className="mt-6 text-4xl sm:text-5xl md:text-7xl font-headline font-black leading-[1.05] tracking-tight text-on-surface">
             Contact Desk
           </h1>
-          <p className="mt-6 text-muted text-xl uppercase tracking-widest font-bold">
+          <p className="mt-6 text-muted text-sm sm:text-xl uppercase tracking-widest font-bold leading-relaxed">
             Send tips, corrections, inquiries, and reader feedback directly to the newsroom.
           </p>
         </header>
 
         {status === "success" ? (
-          <div className="bg-success-soft text-success p-8 border-l-4 border-success">
+          <div className="bg-success-soft text-success p-5 sm:p-8 border-l-4 border-success">
             <h3 className="font-headline text-2xl font-bold mb-2">Message Received</h3>
             <p className="font-medium">{message}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             <div>
-              <h3 className="font-headline text-3xl font-bold mb-6">Send a Message</h3>
+              <h3 className="font-headline text-2xl sm:text-3xl font-bold mb-6">Send a Message</h3>
               <form action={handleContact} className="space-y-6">
                 <div>
                   <label htmlFor="name" className="block text-[11px] font-bold uppercase tracking-wider text-muted mb-2">Full Name</label>
@@ -86,14 +86,14 @@ export default function ContactPage() {
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="bg-primary text-on-primary px-8 py-4 font-bold text-xs uppercase tracking-widest shadow-lg hover:shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:scale-100"
+                  className="w-full sm:w-auto min-h-12 bg-primary text-on-primary px-8 py-4 font-bold text-xs uppercase tracking-widest shadow-lg hover:shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:scale-100"
                 >
                   {isPending ? "Submitting..." : "Submit to Newsroom"}
                 </button>
               </form>
             </div>
             
-            <aside className="bg-surface-muted p-8 border border-border self-start">
+            <aside className="bg-surface-muted p-5 sm:p-8 border border-border self-start">
               <h4 className="font-bold uppercase text-[10px] tracking-widest text-primary mb-6 border-b border-border pb-2 inline-block">Direct Contact</h4>
               <div className="space-y-6">
                 <div>

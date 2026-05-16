@@ -61,8 +61,14 @@ export function CommentSection({ storyId, initialComments, isAdmin }: CommentSec
 
   const handleDelete = async (commentId: string) => {
     if (!confirm("Are you sure you want to delete this comment?")) return;
-    setComments((prev) => prev.filter((c) => c.id !== commentId && c.parent_id !== commentId));
-    await deleteCommentAction(commentId, storyId);
+    const result = await deleteCommentAction(commentId, storyId);
+
+    if (result.status === "success") {
+      setComments((prev) => prev.filter((c) => c.id !== commentId && c.parent_id !== commentId));
+      return;
+    }
+
+    alert(result.message);
   };
 
   // Main comment form
@@ -172,7 +178,7 @@ export function CommentSection({ storyId, initialComments, isAdmin }: CommentSec
       {/* Comment List */}
       {commentCount === 0 ? (
         <div className="comment-empty">
-          <div className="comment-empty-icon">💬</div>
+          <div className="comment-empty-icon">...</div>
           <h4>No comments yet</h4>
           <p>Be the first to share your thoughts on this story.</p>
         </div>
@@ -195,8 +201,9 @@ export function CommentSection({ storyId, initialComments, isAdmin }: CommentSec
                     </time>
                     {isAdmin && (
                       <button
+                        type="button"
                         onClick={() => handleDelete(comment.id)}
-                        className="text-xs text-error opacity-60 hover:opacity-100 hover:underline pt-2 border-none bg-transparent cursor-pointer"
+                        className="comment-delete-btn"
                       >
                         Delete
                       </button>
@@ -238,8 +245,9 @@ export function CommentSection({ storyId, initialComments, isAdmin }: CommentSec
                           </time>
                           {isAdmin && (
                             <button
+                              type="button"
                               onClick={() => handleDelete(reply.id)}
-                              className="text-xs text-error opacity-60 hover:opacity-100 hover:underline pt-2 border-none bg-transparent cursor-pointer"
+                              className="comment-delete-btn"
                             >
                               Delete
                             </button>

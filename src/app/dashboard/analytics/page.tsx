@@ -103,13 +103,13 @@ export default async function AnalyticsPage() {
       {/* Top Performer Highlight */}
       {topPerformer && (
         <div className="analytics-top-performer">
-          <div className="analytics-top-performer-badge">🏆 Top Performer</div>
+          <div className="analytics-top-performer-badge">Top Performer</div>
           <h3 className="analytics-top-performer-title">{topPerformer.title}</h3>
           <div className="analytics-top-performer-stats">
             <span>{(topPerformer.views ?? 0).toLocaleString()} views</span>
-            <span className="analytics-dot">•</span>
+            <span className="analytics-dot">/</span>
             <span>{topPerformer.commentCount} comments</span>
-            <span className="analytics-dot">•</span>
+            <span className="analytics-dot">/</span>
             <span className="analytics-top-performer-score">Score: {topPerformer.trendingScore}</span>
           </div>
         </div>

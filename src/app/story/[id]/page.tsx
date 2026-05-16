@@ -156,7 +156,7 @@ export default async function StoryPage({
 }: StoryPageProps) {
   if (!hasSupabaseEnv()) {
     return (
-      <div className="max-w-4xl mx-auto py-20 px-6">
+      <div className="max-w-4xl mx-auto py-14 sm:py-20 px-4 sm:px-6">
         <StatePanel
           description="The publishing backend is not configured correctly yet."
           eyebrow="Newsroom Offline"
@@ -179,7 +179,7 @@ export default async function StoryPage({
 
   if (storyError || !story) {
     return (
-      <div className="max-w-4xl mx-auto py-20 px-6">
+      <div className="max-w-4xl mx-auto py-14 sm:py-20 px-4 sm:px-6">
         {storyError ? (
           <StatePanel
             actions={<Link className="bg-primary text-white px-4 py-2 uppercase font-bold text-xs" href="/">Return to front page</Link>}
@@ -224,106 +224,110 @@ export default async function StoryPage({
     .filter(Boolean);
 
   return (
-    <div className="article-page bg-surface">
+    <div className="bg-surface text-on-surface scroll-smooth min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: toJsonLd(newsArticleJsonLd) }}
       />
       <ViewTracker storyId={story.id} />
-      {/* Article Hero */}
-      <div className="article-hero bg-surface-strong">
-         <div className="w-full relative min-h-[50vh] flex items-center justify-center overflow-hidden">
-            {story.featured_image_url ? (
-               <img src={story.featured_image_url} alt={story.title} className="absolute inset-0 w-full h-full object-cover" />
-            ) : story.video_url ? (
-               <video controls src={story.video_url} className="absolute inset-0 w-full h-full object-cover"></video>
-            ) : (
-               <div className="absolute inset-0 flex items-center justify-center text-muted font-headline italic">No media available</div>
+
+      <main className="pt-10 sm:pt-14 lg:pt-16 pb-16 sm:pb-20 px-4 sm:px-6 max-w-7xl mx-auto overflow-hidden">
+        {/* Article Header Section */}
+        <header className="max-w-4xl mx-auto mb-8 sm:mb-12">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-5 sm:mb-6">
+            <span className="bg-primary text-on-primary px-3 py-1 text-[10px] font-bold uppercase tracking-widest">
+              {story.category}
+            </span>
+            {story.location && (
+              <span className="text-on-surface-variant text-[10px] font-bold uppercase tracking-widest">
+                {story.location}
+              </span>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80"></div>
-            
-            <div className="relative z-10 max-w-screen-xl mx-auto px-6 w-full pt-32 pb-16 flex flex-col justify-end text-white h-full">
-               <span className="font-bold text-xs uppercase tracking-[0.2em] mb-4 text-primary bg-white/10 backdrop-blur w-fit px-3 py-1 border border-white/20">
-                 {story.category}
-               </span>
-               <h1 className="font-headline text-5xl md:text-7xl font-black leading-tight tracking-tight max-w-4xl drop-shadow-lg">
-                 {story.title}
-               </h1>
+          </div>
+          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black font-headline leading-[1.05] tracking-tight mb-6 sm:mb-8">
+            {story.title}
+          </h1>
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-5 sm:gap-8 items-end border-t border-outline-variant/20 pt-6 sm:pt-8">
+            <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+              <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary font-headline flex-shrink-0">
+                {SITE_NAME.charAt(0)}
+              </div>
+              <div className="min-w-0">
+                <p className="font-sans text-sm font-bold">Newsroom Desk</p>
+                <p className="font-sans text-xs text-on-surface-variant uppercase tracking-widest">Editorial Team</p>
+              </div>
             </div>
-         </div>
-      </div>
-
-      <main className="max-w-screen-xl mx-auto px-6 py-16 flex flex-col lg:flex-row gap-16">
-         {/* Sidebar Left: Author/Meta */}
-         <aside className="lg:w-1/5 flex-shrink-0">
-            <div className="sticky top-32 flex flex-col gap-8">
-               <div className="meta-block">
-                 <h4 className="text-[10px] uppercase font-bold text-muted tracking-widest mb-1 border-b border-border pb-2">By</h4>
-                 <p className="font-headline font-bold text-lg text-on-surface">Newsroom Desk</p>
-               </div>
-               <div className="meta-block">
-                 <h4 className="text-[10px] uppercase font-bold text-muted tracking-widest mb-1 border-b border-border pb-2">Published</h4>
-                 <p className="font-bold text-sm text-on-surface">{dateFormatter.format(primaryDate)}</p>
-               </div>
-               {story.location && (
-                 <div className="meta-block">
-                   <h4 className="text-[10px] uppercase font-bold text-muted tracking-widest mb-1 border-b border-border pb-2">Location</h4>
-                   <p className="font-bold text-sm text-on-surface">{story.location}</p>
-                 </div>
-               )}
+            <div className="text-left sm:text-right flex flex-col gap-1">
+              <p className="font-sans text-[10px] text-on-surface-variant uppercase tracking-widest">Published {dateFormatter.format(primaryDate)}</p>
+              {story.updated_at && story.updated_at !== story.created_at && (
+                <p className="font-sans text-[10px] text-primary font-bold uppercase tracking-widest">Updated</p>
+              )}
             </div>
-         </aside>
+          </div>
+        </header>
 
-         {/* Core Article Area */}
-         <article className="lg:w-3/5 prose prose-stone lg:prose-lg max-w-none prose-p:font-body prose-headings:font-headline font-medium text-on-surface">
-            {/* Standfirst / Excerpt */}
-            <p className="font-headline text-2xl md:text-3xl italic leading-relaxed text-primary mb-12 border-l-4 border-primary pl-6">
-               {story.excerpt}
-            </p>
+        {/* Lead Visual */}
+        <section className="max-w-4xl mx-auto mb-10 sm:mb-12 relative">
+          <div className="aspect-[4/3] sm:aspect-video w-full overflow-hidden bg-surface-container-highest">
+            {story.featured_image_url ? (
+              <img src={story.featured_image_url} alt={story.title} className="w-full h-full object-cover" />
+            ) : story.video_url ? (
+              <video controls src={story.video_url} className="w-full h-full object-cover"></video>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-muted font-headline italic text-sm sm:text-base">No media available</div>
+            )}
+          </div>
+        </section>
 
-            {/* Dropped Cap on first paragraph logic */}
-            <div className="article-body-content mt-8 text-lg font-medium leading-[2]">
-              {articleParagraphs.map((par, idx) => {
-                if (idx === 0) {
-                  return (
-                    <p key={idx} className="first-letter:float-left first-letter:text-7xl first-letter:font-black first-letter:font-headline first-letter:text-primary first-letter:mr-3 first-letter:mt-1 mb-8">
-                      {par}
-                    </p>
-                  );
-                }
-                return <p key={idx} className="mb-8">{par}</p>;
-              })}
+        {/* Article Content */}
+        <div className="max-w-5xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-14">
+          <article className="flex-1 min-w-0 max-w-3xl">
+            <div className="font-headline text-xl sm:text-2xl font-medium leading-relaxed mb-8 sm:mb-10 text-on-surface/90 border-l-4 border-primary pl-5 sm:pl-8 italic">
+              {story.excerpt}
             </div>
-            
-            {/* Story Discussion */}
-            <div className="mt-16 pt-8 border-t border-border">
-          <CommentSection storyId={story.id} initialComments={comments} isAdmin={isAdmin} />
-        </div>
-         </article>
+            <div className="text-on-surface text-base sm:text-lg font-body leading-relaxed sm:leading-loose space-y-6 sm:space-y-7">
+              {articleParagraphs.map((par, idx) => (
+                <p key={idx}>{par}</p>
+              ))}
+            </div>
 
-         {/* Sidebar Right: Recommended */}
-         <aside className="lg:w-1/5 flex-shrink-0 border-t lg:border-t-0 lg:border-l border-border pt-12 lg:pt-0 lg:pl-10">
-            <div className="sticky top-32">
-               <h4 className="font-headline font-black italic text-2xl mb-8 flex items-center gap-2">
-                  <span className="w-4 h-4 bg-primary block"></span>
-                  Recommended
-               </h4>
-               
-               <div className="flex flex-col gap-8">
-                  {relatedStories.map((relStory) => (
-                    <Link href={`/story/${relStory.id}`} key={relStory.id} className="group block">
-                       <span className="text-[10px] font-bold tracking-widest uppercase text-muted mb-2 block">{relStory.category}</span>
-                       <h5 className="font-headline font-bold text-lg leading-tight group-hover:text-primary transition-colors">{relStory.title}</h5>
+            {/* Comments Section */}
+            <section className="mt-14 sm:mt-20 pt-8 sm:pt-10 border-t border-outline-variant/20">
+              <CommentSection storyId={story.id} initialComments={comments} isAdmin={isAdmin} />
+            </section>
+          </article>
+
+          {/* Sidebar: Related Stories */}
+          <aside className="w-full lg:w-80 flex flex-col gap-10 lg:flex-shrink-0">
+            <div>
+              <h4 className="font-sans text-xs font-bold uppercase tracking-[0.2em] text-primary mb-6 border-b-2 border-primary pb-2 inline-block">Recommended</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6 lg:gap-8">
+                {relatedStories.map((relStory) => (
+                  <article className="group" key={relStory.id}>
+                    <Link href={`/story/${relStory.id}`}>
+                      <div className="aspect-[4/3] w-full overflow-hidden bg-surface-container-highest mb-3">
+                        {relStory.featured_image_url ? (
+                          <img src={relStory.featured_image_url} alt={relStory.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-xs text-muted">No Image</div>
+                        )}
+                      </div>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-primary">{relStory.category}</span>
+                      <h5 className="font-headline text-lg sm:text-xl font-bold leading-tight group-hover:underline mt-1">{relStory.title}</h5>
                     </Link>
-                  ))}
-               </div>
-
-               <div className="mt-16 bg-surface-muted p-6 rounded border-l-2 border-border">
-                 <h4 className="font-bold text-xs uppercase tracking-widest mb-4">Stay Briefed</h4>
-                 <SubscribeForm />
-               </div>
+                  </article>
+                ))}
+              </div>
             </div>
-         </aside>
+
+            {/* Newsletter Card */}
+            <div className="bg-primary p-6 sm:p-8 text-on-primary">
+              <h4 className="font-serif font-headline text-2xl font-bold mb-4">The Morning Brief</h4>
+              <p className="text-sm opacity-80 mb-6">Get the most important stories delivered to your inbox every weekday morning.</p>
+              <SubscribeForm />
+            </div>
+          </aside>
+        </div>
       </main>
     </div>
   );

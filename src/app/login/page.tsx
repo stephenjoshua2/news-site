@@ -28,7 +28,7 @@ export default function LoginPage({ searchParams }: LoginPageProps) {
     <div className="min-h-screen bg-surface flex flex-col md:flex-row">
       <div className="md:w-1/2 bg-surface-strong p-8 md:p-20 flex flex-col justify-between border-r border-border min-h-[40vh] md:min-h-screen">
           <div className="brand">
-             <span className="font-bold text-[10px] tracking-widest uppercase text-muted">Signal Press</span>
+             <span className="font-bold text-[10px] tracking-widest uppercase text-muted">Frontline Daily</span>
           </div>
 
           <div className="hero-text my-auto">

@@ -23,28 +23,28 @@ export default async function AboutPage() {
   const settings = await getSiteSettings();
 
   return (
-    <div className="about-page">
-      <main className="max-w-screen-xl mx-auto px-6 py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+    <div className="bg-surface min-h-screen text-on-surface">
+      <main className="max-w-screen-xl mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
           <div className="lg:col-span-8 flex flex-col gap-8">
-             <div className="border-l-4 border-primary pl-8 mb-8">
-               <h1 className="font-headline text-5xl md:text-7xl font-black leading-tight tracking-tight mb-4 text-on-surface">
+             <div className="border-l-4 border-primary pl-5 sm:pl-8 mb-4 sm:mb-8">
+               <h1 className="font-headline text-4xl sm:text-5xl md:text-7xl font-black leading-[1.05] tracking-tight mb-4 text-on-surface">
                   The Newsroom Desk
                </h1>
-               <div className="text-muted text-xl uppercase tracking-widest font-bold font-sans">
-                  Independent Nigerian Digital Journalism
+               <div className="text-on-surface-variant text-sm sm:text-xl uppercase tracking-widest font-bold font-sans leading-relaxed">
+                  Independent Digital Journalism
                </div>
              </div>
 
              <article className="prose prose-stone max-w-none prose-lg">
-                <p className="font-headline text-2xl italic text-on-surface leading-relaxed border-b border-border pb-8">
-                   Signal Press is an independent Nigerian digital publication focused on public affairs, accountability, business, technology, and culture.
+                <p className="font-headline text-xl sm:text-2xl italic text-on-surface leading-relaxed border-b border-outline-variant/30 pb-6 sm:pb-8">
+                   Frontline Daily is an independent digital publication focused on public affairs, accountability, business, technology, and culture.
                 </p>
-                <div className="mt-8 text-on-surface text-lg leading-loose whitespace-pre-wrap">
-                   {settings?.author_bio || "The newsroom focuses on verified reporting, clear analysis, and accountable public-interest journalism for Nigerian and global readers."}
+                <div className="mt-8 text-on-surface text-base sm:text-lg font-body leading-relaxed sm:leading-loose whitespace-pre-wrap">
+                   {settings?.author_bio || "The newsroom focuses on verified reporting, clear analysis, and accountable public-interest journalism for global readers."}
                 </div>
-                
-                <div className="mt-16 bg-surface-muted p-8 rounded-lg border-l-4 border-border">
+
+                <div className="mt-10 sm:mt-16 bg-surface-muted p-5 sm:p-8 rounded-lg border-l-4 border-border">
                   <h3 className="font-bold uppercase tracking-widest text-sm text-primary mb-4">What This Publication Covers</h3>
                   <ul className="list-disc pl-5 space-y-2 text-on-surface-variant font-medium">
                     <li>Public-interest reporting and accountability</li>
@@ -57,7 +57,7 @@ export default async function AboutPage() {
              </article>
           </div>
 
-          <aside className="lg:col-span-4 flex flex-col gap-10">
+          <aside className="lg:col-span-4 flex flex-col gap-8 lg:gap-10">
              <div className="border-b-2 border-primary w-24 mb-4"></div>
              <h3 className="font-headline text-2xl font-bold uppercase tracking-tight italic">Contact & Network</h3>
              
@@ -84,7 +84,7 @@ export default async function AboutPage() {
                    <span className="w-12 h-12 bg-primary text-white flex items-center justify-center font-bold">@</span>
                    <div>
                      <div className="font-bold text-sm uppercase tracking-widest text-primary">Get In Touch</div>
-                     <div className="text-xs text-muted">Secure Contact Desk</div>
+                       <div className="text-xs text-muted">Contact Desk</div>
                    </div>
                 </Link>
              </div>
