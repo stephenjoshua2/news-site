@@ -2,6 +2,7 @@ import Link from "next/link";
 import { StatePanel } from "@/components/StatePanel";
 import { SubscribeForm } from "@/components/SubscribeForm";
 import { formatCategoryLabel, slugifyCategory } from "@/lib/site";
+import { getStoryImageUrl } from "@/lib/story-media";
 import { hasSupabaseEnv } from "@/lib/supabase/config";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Story } from "@/lib/types";
@@ -69,9 +70,13 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     : stories;
 
   const featuredStory = visibleStories[0];
+  const featuredStoryImageUrl = featuredStory ? getStoryImageUrl(featuredStory) : null;
   const spotlightStories = featuredStory ? visibleStories.slice(1, 4) : [];
   const latestGridStories = visibleStories.slice(4, 8);
   const remainingStories = visibleStories.slice(8);
+  const featuredTitleClassName = featuredStoryImageUrl
+    ? "font-headline text-3xl sm:text-4xl lg:text-5xl font-bold text-on-surface leading-[1.08] tracking-tight group-hover:text-primary transition-colors"
+    : "font-headline text-2xl sm:text-3xl lg:text-4xl font-bold text-on-surface leading-[1.12] tracking-tight group-hover:text-primary transition-colors";
 
   if (!hasSupabaseEnv()) {
     return (
@@ -162,17 +167,15 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             {/* Lead Story */}
             <div className="lg:col-span-8 flex flex-col gap-6">
               <Link href={`/story/${featuredStory.id}`} className="group cursor-pointer flex flex-col gap-4">
-                <div className="w-full bg-surface-container-highest overflow-hidden rounded-sm aspect-[16/9]">
-                  {featuredStory.featured_image_url ? (
+                {featuredStoryImageUrl ? (
+                  <div className="w-full bg-surface-container-highest overflow-hidden rounded-sm aspect-[16/9]">
                     <img
-                      src={featuredStory.featured_image_url}
+                      src={featuredStoryImageUrl}
                       alt={featuredStory.title}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-on-surface-variant font-headline italic">No Feature Image</div>
-                  )}
-                </div>
+                  </div>
+                ) : null}
 
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-wrap items-center gap-2 sm:gap-3">
@@ -184,7 +187,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                       {formatDate(featuredStory.published_at || featuredStory.created_at)}
                     </span>
                   </div>
-                  <h2 className="font-headline text-3xl sm:text-4xl lg:text-5xl font-bold text-on-surface leading-[1.08] tracking-tight group-hover:text-primary transition-colors">
+                  <h2 className={featuredTitleClassName}>
                     {featuredStory.title}
                   </h2>
                   <p className="font-body text-on-surface-variant text-base sm:text-lg leading-relaxed max-w-3xl">
@@ -201,6 +204,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               <div className="flex flex-col gap-6 divide-y divide-outline-variant/20">
                 {spotlightStories.map((story, idx) => (
                   <Link href={`/story/${story.id}`} key={story.id} className={`group cursor-pointer flex flex-col gap-3 ${idx > 0 ? 'pt-6' : ''}`}>
+                    {(() => {
+                      const imageUrl = getStoryImageUrl(story);
+                      return (
+                        <>
                     <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                       <span className="text-primary font-label text-[9px] font-bold uppercase tracking-widest">{story.category}</span>
                       <span className="w-1 h-1 bg-zinc-300 rounded-full"></span>
@@ -210,16 +217,19 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                     </div>
                     <div className="flex gap-4">
                       <h4 className="font-headline text-lg sm:text-xl font-bold leading-tight group-hover:text-primary transition-colors flex-1">{story.title}</h4>
-                      {story.featured_image_url && (
+                      {imageUrl ? (
                         <div className="w-20 h-20 flex-shrink-0 overflow-hidden bg-surface-container-low rounded-sm">
                           <img
-                            src={story.featured_image_url}
+                            src={imageUrl}
                             alt={story.title}
                             className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
                           />
                         </div>
-                      )}
+                      ) : null}
                     </div>
+                        </>
+                      );
+                    })()}
                   </Link>
                 ))}
               </div>
@@ -247,15 +257,18 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7 md:gap-8">
               {latestGridStories.map(story => (
                 <Link href={`/story/${story.id}`} key={story.id} className="flex flex-col group cursor-pointer">
-                  <div className="aspect-[4/3] overflow-hidden rounded-sm mb-4 bg-surface-container-highest">
-                    {story.featured_image_url && (
+                  {(() => {
+                    const imageUrl = getStoryImageUrl(story);
+                    return imageUrl ? (
+                      <div className="aspect-[4/3] overflow-hidden rounded-sm mb-4 bg-surface-container-highest">
                       <img
-                        src={story.featured_image_url}
+                        src={imageUrl}
                         alt={story.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
-                    )}
-                  </div>
+                      </div>
+                    ) : null;
+                  })()}
                   <span className="text-primary font-label text-[9px] font-bold uppercase tracking-widest mb-2">{story.category}</span>
                   <h4 className="font-headline text-lg font-bold leading-snug mb-2 group-hover:text-primary transition-colors">{story.title}</h4>
                   <p className="text-xs text-on-surface-variant line-clamp-2">{story.excerpt}</p>

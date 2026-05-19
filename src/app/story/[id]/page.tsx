@@ -3,11 +3,13 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { CommentSection } from "@/components/CommentSection";
+import { ShareStoryButton } from "@/components/ShareStoryButton";
 import { StatePanel } from "@/components/StatePanel";
 import { SubscribeForm } from "@/components/SubscribeForm";
 import { ViewTracker } from "@/components/ViewTracker";
 import { getCurrentAdminSession } from "@/lib/auth";
 import { getCanonicalUrl, SITE_NAME, toJsonLd } from "@/lib/site";
+import { getStoryImageUrl, getStoryVideoUrl } from "@/lib/story-media";
 import { hasSupabaseEnv } from "@/lib/supabase/config";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Comment, Story } from "@/lib/types";
@@ -72,6 +74,7 @@ export async function generateMetadata({ params }: StoryPageProps): Promise<Meta
   }
 
   const canonical = `/story/${story.id}`;
+  const imageUrl = getStoryImageUrl(story);
 
   return {
     title: story.title,
@@ -87,7 +90,7 @@ export async function generateMetadata({ params }: StoryPageProps): Promise<Meta
       publishedTime: story.published_at ?? story.created_at,
       modifiedTime: story.updated_at,
       section: story.category,
-      images: story.featured_image_url ? [{ url: story.featured_image_url }] : undefined,
+      images: imageUrl ? [{ url: imageUrl }] : undefined,
     },
   };
 }
@@ -198,6 +201,8 @@ export default async function StoryPage({
 
   const primaryDate = new Date(story.published_at ?? story.created_at);
   const storyUrl = getCanonicalUrl(`/story/${story.id}`);
+  const imageUrl = getStoryImageUrl(story);
+  const videoUrl = getStoryVideoUrl(story);
   const newsArticleJsonLd = {
     "@context": "https://schema.org",
     "@type": "NewsArticle",
@@ -216,7 +221,7 @@ export default async function StoryPage({
       "@type": "Organization",
       name: SITE_NAME,
     },
-    image: story.featured_image_url ? [story.featured_image_url] : undefined,
+    image: imageUrl ? [imageUrl] : undefined,
   };
   const articleParagraphs = story.content
     .split(/\n{2,}/)
@@ -267,17 +272,17 @@ export default async function StoryPage({
         </header>
 
         {/* Lead Visual */}
-        <section className="max-w-4xl mx-auto mb-10 sm:mb-12 relative">
-          <div className="aspect-[4/3] sm:aspect-video w-full overflow-hidden bg-surface-container-highest">
-            {story.featured_image_url ? (
-              <img src={story.featured_image_url} alt={story.title} className="w-full h-full object-cover" />
-            ) : story.video_url ? (
-              <video controls src={story.video_url} className="w-full h-full object-cover"></video>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-muted font-headline italic text-sm sm:text-base">No media available</div>
-            )}
-          </div>
-        </section>
+        {(imageUrl || videoUrl) && (
+          <section className="max-w-4xl mx-auto mb-10 sm:mb-12 relative">
+            <div className="aspect-[4/3] sm:aspect-video w-full overflow-hidden bg-surface-container-highest">
+              {imageUrl ? (
+                <img src={imageUrl} alt={story.title} className="w-full h-full object-cover" />
+              ) : videoUrl ? (
+                <video controls src={videoUrl} className="w-full h-full object-cover"></video>
+              ) : null}
+            </div>
+          </section>
+        )}
 
         {/* Article Content */}
         <div className="max-w-5xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-14">
@@ -285,10 +290,14 @@ export default async function StoryPage({
             <div className="font-headline text-xl sm:text-2xl font-medium leading-relaxed mb-8 sm:mb-10 text-on-surface/90 border-l-4 border-primary pl-5 sm:pl-8 italic">
               {story.excerpt}
             </div>
-            <div className="text-on-surface text-base sm:text-lg font-body leading-relaxed sm:leading-loose space-y-6 sm:space-y-7">
+            <div className="story-body-content text-on-surface text-base sm:text-lg font-body leading-relaxed sm:leading-loose space-y-6 sm:space-y-7">
               {articleParagraphs.map((par, idx) => (
                 <p key={idx}>{par}</p>
               ))}
+            </div>
+
+            <div className="mt-10 sm:mt-12 border-t border-outline-variant/20 pt-6 sm:pt-8">
+              <ShareStoryButton title={story.title} text={story.excerpt} />
             </div>
 
             {/* Comments Section */}
@@ -305,13 +314,14 @@ export default async function StoryPage({
                 {relatedStories.map((relStory) => (
                   <article className="group" key={relStory.id}>
                     <Link href={`/story/${relStory.id}`}>
-                      <div className="aspect-[4/3] w-full overflow-hidden bg-surface-container-highest mb-3">
-                        {relStory.featured_image_url ? (
-                          <img src={relStory.featured_image_url} alt={relStory.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-xs text-muted">No Image</div>
-                        )}
-                      </div>
+                      {(() => {
+                        const relatedImageUrl = getStoryImageUrl(relStory);
+                        return relatedImageUrl ? (
+                          <div className="aspect-[4/3] w-full overflow-hidden bg-surface-container-highest mb-3">
+                            <img src={relatedImageUrl} alt={relStory.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                          </div>
+                        ) : null;
+                      })()}
                       <span className="text-[10px] font-bold uppercase tracking-widest text-primary">{relStory.category}</span>
                       <h5 className="font-headline text-lg sm:text-xl font-bold leading-tight group-hover:underline mt-1">{relStory.title}</h5>
                     </Link>

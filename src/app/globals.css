@@ -1684,6 +1684,15 @@ p {
   aspect-ratio: auto;
 }
 
+.story-card-text-only.story-card-compact {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.story-card-text-only .story-card-body,
+.story-card-text-only.story-card-compact .story-card-body {
+  padding: 1.25rem;
+}
+
 .story-card-placeholder {
   display: grid;
   align-content: center;

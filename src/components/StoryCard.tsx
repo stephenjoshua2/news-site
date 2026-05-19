@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { getStoryImageUrl } from "@/lib/story-media";
 import type { Story } from "@/lib/types";
 
 type StoryCardProps = {
@@ -18,22 +19,21 @@ export function StoryCard({
   const publishedLabel = formatter.format(
     new Date(story.published_at ?? story.created_at),
   );
-  const cardClassName =
-    variant === "compact" ? "story-card story-card-compact" : "story-card";
+  const imageUrl = getStoryImageUrl(story);
+  const cardClassName = [
+    "story-card",
+    variant === "compact" ? "story-card-compact" : "",
+    imageUrl ? "" : "story-card-text-only",
+  ].filter(Boolean).join(" ");
   const headingClassName = variant === "compact" ? "card-title card-title-compact" : "card-title";
 
   return (
     <article className={cardClassName}>
-      <div className="story-card-media">
-        {story.featured_image_url ? (
-          <img src={story.featured_image_url} alt={story.title} loading="lazy" />
-        ) : (
-          <div className="story-card-placeholder">
-            <span className="eyebrow">{story.category}</span>
-            <span className="meta-text">No featured image</span>
-          </div>
-        )}
-      </div>
+      {imageUrl ? (
+        <div className="story-card-media">
+          <img src={imageUrl} alt={story.title} loading="lazy" />
+        </div>
+      ) : null}
 
       <div className="story-card-body">
         <div className="meta-row story-card-meta story-card-meta-public">

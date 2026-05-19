@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { InlineMessage } from "@/components/InlineMessage";
+import { ShareStoryButton } from "@/components/ShareStoryButton";
 import { StatePanel } from "@/components/StatePanel";
 import { StatusBadge } from "@/components/StatusBadge";
 import { StoryForm } from "@/components/StoryForm";
 import { SubmitButton } from "@/components/SubmitButton";
 import { requireAdminUser } from "@/lib/auth";
+import { getCanonicalUrl } from "@/lib/site";
+import { getStoryImageUrl } from "@/lib/story-media";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 import { deleteStoryAction, saveStoryAction } from "../actions";
@@ -95,16 +98,32 @@ export default async function StoriesPage({ searchParams }: StoriesPageProps) {
                   <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4 bg-surface-muted p-4 rounded">
                     <div className="text-xs text-muted flex flex-col sm:flex-row gap-2 sm:gap-4">
                       <span><strong>Comments:</strong> {commentsLoadFailed ? "-" : commentCountsByStory[story.id] ?? 0}</span>
-                      <span><strong>Media:</strong> {story.featured_image_url ? "Image" : "None"}</span>
+                      <span><strong>Media:</strong> {getStoryImageUrl(story) ? "Image" : "None"}</span>
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                       {story.status === "published" && (
-                        <Link
-                          href={`/story/${story.id}`}
-                          className="min-h-11 px-4 py-2 border border-border text-xs font-bold uppercase hover:bg-surface-strong inline-flex items-center justify-center"
-                        >
-                          View Live
-                        </Link>
+                        <>
+                          <Link
+                            href={`/story/${story.id}`}
+                            className="min-h-11 px-4 py-2 border border-border text-xs font-bold uppercase hover:bg-surface-strong inline-flex items-center justify-center"
+                          >
+                            View Live
+                          </Link>
+                          <ShareStoryButton
+                            title={story.title}
+                            text={story.excerpt}
+                            url={getCanonicalUrl(`/story/${story.id}`)}
+                            label="Copy Link"
+                            copiedLabel="Link copied"
+                            preferNativeShare={false}
+                            className="min-h-11 w-full sm:w-auto px-4 py-2 border border-border text-xs font-bold uppercase hover:bg-surface-strong inline-flex items-center justify-center text-primary"
+                          />
+                        </>
+                      )}
+                      {story.status !== "published" && (
+                        <span className="min-h-11 px-4 py-2 border border-border text-xs font-bold uppercase text-muted inline-flex items-center justify-center">
+                          Publish to share
+                        </span>
                       )}
                       <form action={deleteStoryAction}>
                         <input type="hidden" name="story_id" value={story.id} />

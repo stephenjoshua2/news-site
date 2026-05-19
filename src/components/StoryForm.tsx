@@ -7,6 +7,7 @@ import {
   VIDEO_ACCEPT,
   formatFileSize,
 } from "@/lib/media";
+import { getStoryImageUrl, getStoryVideoUrl } from "@/lib/story-media";
 import type { Story } from "@/lib/types";
 
 type StoryFormProps = {
@@ -17,14 +18,15 @@ type StoryFormProps = {
 };
 
 export function StoryForm({ action, story, title, description }: StoryFormProps) {
-  const hasImage = Boolean(story?.featured_image_url);
-  const hasVideo = Boolean(story?.video_url);
+  const imageUrl = story ? getStoryImageUrl(story) : null;
+  const videoUrl = story ? getStoryVideoUrl(story) : null;
+  const hasImage = Boolean(imageUrl);
+  const hasVideo = Boolean(videoUrl);
   const hasUploadedImage = Boolean(story?.featured_image_path);
-  const hasFallbackImage = hasImage && !hasUploadedImage;
   const isPublishedStory = story?.status === "published";
   const imageUrlDefaultValue = story?.featured_image_path
     ? ""
-    : story?.featured_image_url ?? "";
+    : imageUrl ?? "";
   const updatedAtLabel = story ? new Date(story.updated_at).toLocaleString() : null;
   const publishedAtLabel =
     story?.published_at ? new Date(story.published_at).toLocaleString() : null;
@@ -104,7 +106,7 @@ export function StoryForm({ action, story, title, description }: StoryFormProps)
                  </div>
                  {hasImage && (
                     <div style={{marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border)'}}>
-                       <img src={story?.featured_image_url ?? ""} alt="Current Cover" style={{width: '100%', height: '120px', objectFit: 'cover', borderRadius: '4px', opacity: 0.8, marginBottom: '0.5rem'}} />
+                       <img src={imageUrl ?? ""} alt="Current Cover" style={{width: '100%', height: '120px', objectFit: 'cover', borderRadius: '4px', opacity: 0.8, marginBottom: '0.5rem'}} />
                        <label style={{display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', fontWeight: 800, color: 'var(--danger)', cursor: 'pointer'}}>
                           <input name="remove_featured_image" type="checkbox" style={{accentColor: 'var(--danger)'}} />
                           Remove image on save
