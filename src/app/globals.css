@@ -3090,6 +3090,11 @@ p {
   background: linear-gradient(180deg, rgba(105, 38, 47, 0.78) 0%, rgba(105, 38, 47, 0.18) 100%);
 }
 
+.story-body-content {
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
 .story-media-empty {
   display: grid;
   gap: var(--space-xs);
@@ -3560,6 +3565,13 @@ p {
   letter-spacing: 0.1em;
   color: var(--muted);
   margin-bottom: 0.5rem;
+}
+
+.editor-help-text {
+  margin: 0.45rem 0 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
 }
 
 .editor-input {

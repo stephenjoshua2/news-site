@@ -223,11 +223,6 @@ export default async function StoryPage({
     },
     image: imageUrl ? [imageUrl] : undefined,
   };
-  const articleParagraphs = story.content
-    .split(/\n{2,}/)
-    .map((paragraph) => paragraph.trim())
-    .filter(Boolean);
-
   return (
     <div className="bg-surface text-on-surface scroll-smooth min-h-screen">
       <script
@@ -290,10 +285,8 @@ export default async function StoryPage({
             <div className="font-headline text-xl sm:text-2xl font-medium leading-relaxed mb-8 sm:mb-10 text-on-surface/90 border-l-4 border-primary pl-5 sm:pl-8 italic">
               {story.excerpt}
             </div>
-            <div className="story-body-content text-on-surface text-base sm:text-lg font-body leading-relaxed sm:leading-loose space-y-6 sm:space-y-7">
-              {articleParagraphs.map((par, idx) => (
-                <p key={idx}>{par}</p>
-              ))}
+            <div className="story-body-content text-on-surface text-base sm:text-lg font-body leading-relaxed sm:leading-loose">
+              {story.content}
             </div>
 
             <div className="mt-10 sm:mt-12 border-t border-outline-variant/20 pt-6 sm:pt-8">

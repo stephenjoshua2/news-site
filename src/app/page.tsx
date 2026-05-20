@@ -13,6 +13,8 @@ type HomePageProps = {
   searchParams?: Record<string, string | string[] | undefined>;
 };
 
+type BreakingStory = Pick<Story, "id" | "title" | "breaking_label">;
+
 async function getPublishedStories(): Promise<{
   error: boolean;
   stories: Story[];
@@ -38,6 +40,30 @@ async function getPublishedStories(): Promise<{
   };
 }
 
+async function getActiveBreakingStories(): Promise<BreakingStory[]> {
+  if (!hasSupabaseEnv()) {
+    return [];
+  }
+
+  const supabase = createSupabaseServerClient();
+  const now = new Date().toISOString();
+  const { data, error } = await supabase
+    .from("stories")
+    .select("id, title, breaking_label")
+    .eq("status", "published")
+    .eq("is_breaking", true)
+    .or(`breaking_expires_at.is.null,breaking_expires_at.gt.${now}`)
+    .order("published_at", { ascending: false })
+    .order("created_at", { ascending: false })
+    .limit(5);
+
+  if (error || !data) {
+    return [];
+  }
+
+  return data;
+}
+
 function formatDate(dateString: string | null) {
   if (!dateString) return "";
   return new Intl.DateTimeFormat("en-US", {
@@ -61,6 +87,7 @@ function readParam(value?: string | string[]) {
 
 export default async function HomePage({ searchParams }: HomePageProps) {
   const { error: storiesLoadFailed, stories } = await getPublishedStories();
+  const breakingStories = await getActiveBreakingStories();
   const selectedCategory = readParam(searchParams?.category);
   const categoryLabel = selectedCategory
     ? formatCategoryLabel(selectedCategory.replace(/-/g, " "))
@@ -129,24 +156,27 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       `}} />
 
       {/* Breaking News Marquee */}
-      {visibleStories.length > 0 && (
-        <div className="bg-primary-container text-on-primary py-2 overflow-hidden flex items-center">
-          <div className="px-3 sm:px-5 flex-shrink-0 flex items-center gap-2 border-r border-white/20 mr-3 sm:mr-4">
-            <span aria-hidden="true" className="h-2 w-2 rounded-full bg-on-primary"></span>
-            <span className="font-label font-bold text-xs uppercase tracking-widest">Breaking</span>
-          </div>
-          <div className="marquee-container flex-1">
+      <div className="bg-primary-container text-on-primary py-2 overflow-hidden flex items-center">
+        <div className="px-3 sm:px-5 flex-shrink-0 flex items-center gap-2 border-r border-white/20 mr-3 sm:mr-4">
+          <span aria-hidden="true" className="h-2 w-2 rounded-full bg-on-primary"></span>
+          <span className="font-label font-bold text-xs uppercase tracking-widest">Breaking</span>
+        </div>
+        <div className="marquee-container flex-1 min-h-5">
+          {breakingStories.length > 0 && (
             <div className="marquee-content inline-flex gap-8 sm:gap-12 text-xs sm:text-sm font-medium">
-              {visibleStories.slice(0, 5).map(s => (
-                <span className="max-w-[72vw] sm:max-w-none overflow-hidden text-ellipsis" key={s.id}>{s.title}</span>
-              ))}
-              {visibleStories.slice(0, 5).map(s => (
-                <span className="max-w-[72vw] sm:max-w-none overflow-hidden text-ellipsis" key={`dup-${s.id}`}>{s.title}</span>
+              {[...breakingStories, ...breakingStories].map((story, index) => (
+                <Link
+                  className="max-w-[72vw] sm:max-w-none overflow-hidden text-ellipsis hover:underline"
+                  href={`/story/${story.id}`}
+                  key={`${story.id}-${index}`}
+                >
+                  {story.breaking_label?.trim() || story.title}
+                </Link>
               ))}
             </div>
-          </div>
+          )}
         </div>
-      )}
+      </div>
 
       <main className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-8 md:py-12 overflow-hidden">
         {categoryLabel && (

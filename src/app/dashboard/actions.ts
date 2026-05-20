@@ -29,6 +29,38 @@ function readOptionalText(formData: FormData, key: string): string | null {
   return value.length > 0 ? value : null;
 }
 
+function readOptionalDateTime(formData: FormData, key: string): string | null {
+  const value = readOptionalText(formData, key);
+
+  if (!value) {
+    return null;
+  }
+
+  const parsed = new Date(value);
+
+  if (Number.isNaN(parsed.getTime())) {
+    redirectToDashboard("error=story-validation");
+  }
+
+  return parsed.toISOString();
+}
+
+function addHours(date: Date, hours: number): string {
+  return new Date(date.getTime() + hours * 60 * 60 * 1000).toISOString();
+}
+
+function getDefaultBreakingExpiry(input: {
+  nextStatus: StoryStatus;
+  existingPublishedAt?: string | null;
+  publishedAt?: string | null;
+}): string {
+  if (input.nextStatus === "published" && input.existingPublishedAt) {
+    return addHours(new Date(), 24);
+  }
+
+  return addHours(new Date(input.publishedAt ?? new Date().toISOString()), 24);
+}
+
 function isProvidedFile(value: FormDataEntryValue | null): value is File {
   return typeof File !== "undefined" && value instanceof File && value.size > 0;
 }
@@ -183,6 +215,13 @@ export async function saveStoryAction(formData: FormData) {
   const removeFeaturedImage = formData.get("remove_featured_image") === "on";
   const removeVideo = formData.get("remove_video") === "on";
   const videoCaptionInput = readOptionalText(formData, "video_caption");
+  const isBreaking = formData.get("is_breaking") === "on";
+  const breakingLabelInput = readOptionalText(formData, "breaking_label");
+  const breakingExpiryInput = readOptionalDateTime(formData, "breaking_expires_at");
+
+  if (breakingLabelInput && breakingLabelInput.length > 160) {
+    redirectToDashboard("error=story-validation");
+  }
 
   validateStoryFields({
     title,
@@ -229,6 +268,9 @@ export async function saveStoryAction(formData: FormData) {
     excerpt,
     content,
     status: nextStatus,
+    is_breaking: isBreaking,
+    breaking_label: isBreaking ? breakingLabelInput : null,
+    breaking_expires_at: null,
   };
 
   type EditableStory = {
@@ -257,6 +299,16 @@ export async function saveStoryAction(formData: FormData) {
       nextStatus === "published"
         ? selectedStory.published_at ?? new Date().toISOString()
         : null;
+    storyPayload.breaking_expires_at = isBreaking
+      ? breakingExpiryInput ??
+        (nextStatus === "published"
+          ? getDefaultBreakingExpiry({
+              nextStatus,
+              existingPublishedAt: selectedStory.published_at,
+              publishedAt: storyPayload.published_at,
+            })
+          : null)
+      : null;
 
     const { error: updateError } = await supabase
       .from("stories")
@@ -274,6 +326,15 @@ export async function saveStoryAction(formData: FormData) {
   } else {
     storyPayload.published_at =
       nextStatus === "published" ? new Date().toISOString() : null;
+    storyPayload.breaking_expires_at = isBreaking
+      ? breakingExpiryInput ??
+        (nextStatus === "published"
+          ? getDefaultBreakingExpiry({
+              nextStatus,
+              publishedAt: storyPayload.published_at,
+            })
+          : null)
+      : null;
 
     const { data, error } = await supabase
       .from("stories")
@@ -286,6 +347,9 @@ export async function saveStoryAction(formData: FormData) {
         content,
         status: nextStatus,
         published_at: storyPayload.published_at,
+        is_breaking: storyPayload.is_breaking,
+        breaking_label: storyPayload.breaking_label,
+        breaking_expires_at: storyPayload.breaking_expires_at,
       })
       .select("id, published_at, featured_image_path, video_path")
       .single();

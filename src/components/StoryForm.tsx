@@ -17,6 +17,21 @@ type StoryFormProps = {
   description: string;
 };
 
+function toDateTimeLocalValue(value?: string | null): string {
+  if (!value) {
+    return "";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const offsetMs = date.getTimezoneOffset() * 60 * 1000;
+  return new Date(date.getTime() - offsetMs).toISOString().slice(0, 16);
+}
+
 export function StoryForm({ action, story, title, description }: StoryFormProps) {
   const imageUrl = story ? getStoryImageUrl(story) : null;
   const videoUrl = story ? getStoryVideoUrl(story) : null;
@@ -30,6 +45,7 @@ export function StoryForm({ action, story, title, description }: StoryFormProps)
   const updatedAtLabel = story ? new Date(story.updated_at).toLocaleString() : null;
   const publishedAtLabel =
     story?.published_at ? new Date(story.published_at).toLocaleString() : null;
+  const breakingExpiryDefaultValue = toDateTimeLocalValue(story?.breaking_expires_at);
 
   return (
     <form action={action} encType="multipart/form-data" className="story-editor-wrapper">
@@ -196,6 +212,44 @@ export function StoryForm({ action, story, title, description }: StoryFormProps)
                      {publishedAtLabel && <span>Live: {publishedAtLabel}</span>}
                   </div>
                 )}
+
+                <div style={{paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.85rem', borderTop: '1px solid var(--border)', marginTop: '0.5rem'}}>
+                  <label style={{display: 'flex', alignItems: 'flex-start', gap: '0.65rem', fontSize: '0.8rem', fontWeight: 800, color: 'var(--text)', cursor: 'pointer'}}>
+                    <input
+                      name="is_breaking"
+                      type="checkbox"
+                      defaultChecked={Boolean(story?.is_breaking)}
+                      style={{accentColor: 'var(--accent)', marginTop: '0.15rem'}}
+                    />
+                    <span>Mark as Breaking News</span>
+                  </label>
+
+                  <div>
+                    <label className="editor-label" htmlFor={`breaking-label-${story?.id ?? "new"}`}>Breaking ticker text</label>
+                    <input
+                      id={`breaking-label-${story?.id ?? "new"}`}
+                      name="breaking_label"
+                      type="text"
+                      defaultValue={story?.breaking_label ?? ""}
+                      maxLength={160}
+                      className="editor-input"
+                      placeholder="Optional short strip text"
+                    />
+                    <p className="editor-help-text">Optional short version for the red breaking strip.</p>
+                  </div>
+
+                  <div>
+                    <label className="editor-label" htmlFor={`breaking-expiry-${story?.id ?? "new"}`}>Breaking expiry</label>
+                    <input
+                      id={`breaking-expiry-${story?.id ?? "new"}`}
+                      name="breaking_expires_at"
+                      type="datetime-local"
+                      defaultValue={breakingExpiryDefaultValue}
+                      className="editor-input"
+                    />
+                    <p className="editor-help-text">Defaults to 24 hours after publishing if left empty.</p>
+                  </div>
+                </div>
                 
                 <div style={{paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem', borderTop: '1px solid var(--border)', marginTop: '0.5rem'}}>
                    <SubmitButton

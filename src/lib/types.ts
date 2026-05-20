@@ -28,6 +28,9 @@ export type Story = {
   video_url: string | null;
   video_path: string | null;
   video_caption: string | null;
+  is_breaking: boolean;
+  breaking_label: string | null;
+  breaking_expires_at: string | null;
   created_at: string;
   updated_at: string;
   published_at: string | null;
@@ -85,6 +88,9 @@ export interface Database {
           video_url?: string | null;
           video_path?: string | null;
           video_caption?: string | null;
+          is_breaking?: boolean;
+          breaking_label?: string | null;
+          breaking_expires_at?: string | null;
           created_at?: string;
           updated_at?: string;
           published_at?: string | null;
@@ -104,6 +110,9 @@ export interface Database {
           video_url?: string | null;
           video_path?: string | null;
           video_caption?: string | null;
+          is_breaking?: boolean;
+          breaking_label?: string | null;
+          breaking_expires_at?: string | null;
           created_at?: string;
           updated_at?: string;
           published_at?: string | null;

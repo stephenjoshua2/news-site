@@ -70,6 +70,9 @@ create table if not exists public.stories (
   video_url text,
   video_path text,
   video_caption text,
+  is_breaking boolean not null default false,
+  breaking_label text,
+  breaking_expires_at timestamptz,
   views integer not null default 0,
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now()),
@@ -122,6 +125,10 @@ create index if not exists stories_status_published_idx
 
 create index if not exists stories_author_updated_idx
   on public.stories (author_id, updated_at desc);
+
+create index if not exists stories_active_breaking_idx
+  on public.stories (breaking_expires_at desc, published_at desc)
+  where status = 'published' and is_breaking = true;
 
 create index if not exists comments_story_created_idx
   on public.comments (story_id, created_at desc);
