@@ -1,18 +1,19 @@
 import { SubmitButton } from "@/components/SubmitButton";
 import { StatusBadge } from "@/components/StatusBadge";
+import { MediaUploader } from "@/components/MediaUploader";
 import {
-  IMAGE_ACCEPT,
   MAX_IMAGE_FILE_SIZE,
   MAX_VIDEO_FILE_SIZE,
   VIDEO_ACCEPT,
   formatFileSize,
 } from "@/lib/media";
-import { getStoryImageUrl, getStoryVideoUrl } from "@/lib/story-media";
-import type { Story } from "@/lib/types";
+import { getStoryImageUrl, getStoryVideoUrl, sortStoryMedia } from "@/lib/story-media";
+import type { Story, StoryMedia } from "@/lib/types";
 
 type StoryFormProps = {
   action: (formData: FormData) => Promise<void>;
   story?: Story;
+  gallery?: StoryMedia[];
   title: string;
   description: string;
 };
@@ -32,9 +33,10 @@ function toDateTimeLocalValue(value?: string | null): string {
   return new Date(date.getTime() - offsetMs).toISOString().slice(0, 16);
 }
 
-export function StoryForm({ action, story, title, description }: StoryFormProps) {
+export function StoryForm({ action, story, gallery = [], title, description }: StoryFormProps) {
   const imageUrl = story ? getStoryImageUrl(story) : null;
   const videoUrl = story ? getStoryVideoUrl(story) : null;
+  const sortedGallery = sortStoryMedia(gallery);
   const hasImage = Boolean(imageUrl);
   const hasVideo = Boolean(videoUrl);
   const hasUploadedImage = Boolean(story?.featured_image_path);
@@ -48,7 +50,7 @@ export function StoryForm({ action, story, title, description }: StoryFormProps)
   const breakingExpiryDefaultValue = toDateTimeLocalValue(story?.breaking_expires_at);
 
   return (
-    <form action={action} encType="multipart/form-data" className="story-editor-wrapper">
+    <form action={action} className="story-editor-wrapper">
       <input name="story_id" type="hidden" value={story?.id ?? ""} />
 
       <div className="story-editor-grid">
@@ -93,45 +95,9 @@ export function StoryForm({ action, story, title, description }: StoryFormProps)
           </div>
 
           {/* Media Section */}
-          <div className="editor-media-grid">
-            <div className="editor-media-box">
-              <div className="editor-media-header">
-                <h3 className="editor-media-title" style={{color: 'var(--accent)'}}>Featured Image</h3>
-                {hasImage && <span style={{fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', padding: '2px 6px', background: 'var(--success-soft)', color: 'var(--success)', borderRadius: '4px'}}>Attached</span>}
-              </div>
-              
-              <div style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
-                 <div>
-                    <label className="editor-label">Upload File (Priority)</label>
-                    <input
-                      name="featured_image_file"
-                      type="file"
-                      accept={IMAGE_ACCEPT}
-                      className="editor-file-input"
-                    />
-                 </div>
-                 <div>
-                    <label className="editor-label">Or URL Fallback</label>
-                    <input
-                      name="featured_image_url"
-                      type="url"
-                      defaultValue={imageUrlDefaultValue}
-                      className="editor-input"
-                      placeholder="https://example.com/image.jpg"
-                    />
-                 </div>
-                 {hasImage && (
-                    <div style={{marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border)'}}>
-                       <img src={imageUrl ?? ""} alt="Current Cover" style={{width: '100%', height: '120px', objectFit: 'cover', borderRadius: '4px', opacity: 0.8, marginBottom: '0.5rem'}} />
-                       <label style={{display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', fontWeight: 800, color: 'var(--danger)', cursor: 'pointer'}}>
-                          <input name="remove_featured_image" type="checkbox" style={{accentColor: 'var(--danger)'}} />
-                          Remove image on save
-                       </label>
-                    </div>
-                 )}
-              </div>
-            </div>
+          <MediaUploader existingFeaturedUrl={imageUrl} existingGallery={sortedGallery} />
 
+          <div className="editor-panel">
             <div className="editor-media-box">
               <div className="editor-media-header">
                 <h3 className="editor-media-title">Story Video</h3>
@@ -177,7 +143,6 @@ export function StoryForm({ action, story, title, description }: StoryFormProps)
             <textarea
               name="excerpt"
               defaultValue={story?.excerpt ?? ""}
-              required
               maxLength={280}
               className="editor-textarea-excerpt"
               placeholder="Write a compelling lead..."
@@ -188,7 +153,6 @@ export function StoryForm({ action, story, title, description }: StoryFormProps)
             <textarea
               name="content"
               defaultValue={story?.content ?? ""}
-              required
               className="editor-textarea-focus"
               placeholder="Start your investigation here..."
             />

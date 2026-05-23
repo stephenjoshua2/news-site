@@ -78,8 +78,6 @@ create table if not exists public.stories (
   updated_at timestamptz not null default timezone('utc', now()),
   published_at timestamptz,
   constraint stories_title_length check (char_length(trim(title)) >= 3),
-  constraint stories_excerpt_length check (char_length(trim(excerpt)) >= 10),
-  constraint stories_content_length check (char_length(trim(content)) >= 20),
   constraint stories_publish_state check (
     (status = 'draft' and published_at is null)
     or
@@ -106,6 +104,20 @@ create table if not exists public.comments (
   constraint comments_body_length check (
     char_length(trim(body)) between 2 and 1000
   )
+);
+
+create table if not exists public.story_media (
+  id uuid primary key default gen_random_uuid(),
+  story_id uuid not null references public.stories(id) on delete cascade,
+  url text not null,
+  storage_path text,
+  media_type text not null default 'image',
+  caption text,
+  alt_text text,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default timezone('utc', now()),
+  constraint story_media_media_type_check check (media_type in ('image')),
+  constraint story_media_url_not_blank check (char_length(trim(url)) > 0)
 );
 
 create table if not exists public.contact_messages (
@@ -136,6 +148,9 @@ create index if not exists comments_story_created_idx
 create index if not exists comments_parent_id_idx
   on public.comments (parent_id);
 
+create index if not exists story_media_story_order_idx
+  on public.story_media (story_id, sort_order, created_at);
+
 drop trigger if exists stories_set_updated_at on public.stories;
 create trigger stories_set_updated_at
 before update on public.stories
@@ -146,6 +161,7 @@ alter table public.admin_users enable row level security;
 alter table public.site_settings enable row level security;
 alter table public.stories enable row level security;
 alter table public.comments enable row level security;
+alter table public.story_media enable row level security;
 alter table public.contact_messages enable row level security;
 
 drop policy if exists "Admin users can view their admin row" on public.admin_users;
@@ -255,6 +271,88 @@ on public.comments
 for delete
 to authenticated
 using (public.is_newsroom_admin());
+
+drop policy if exists "Public can read media for published stories" on public.story_media;
+create policy "Public can read media for published stories"
+on public.story_media
+for select
+using (
+  exists (
+    select 1
+    from public.stories
+    where stories.id = story_media.story_id
+      and stories.status = 'published'
+  )
+);
+
+drop policy if exists "Admins can read media for their stories" on public.story_media;
+create policy "Admins can read media for their stories"
+on public.story_media
+for select
+to authenticated
+using (
+  exists (
+    select 1
+    from public.stories
+    where stories.id = story_media.story_id
+      and stories.author_id = auth.uid()
+      and public.is_newsroom_admin()
+  )
+);
+
+drop policy if exists "Admins can insert media for their stories" on public.story_media;
+create policy "Admins can insert media for their stories"
+on public.story_media
+for insert
+to authenticated
+with check (
+  exists (
+    select 1
+    from public.stories
+    where stories.id = story_media.story_id
+      and stories.author_id = auth.uid()
+      and public.is_newsroom_admin()
+  )
+);
+
+drop policy if exists "Admins can update media for their stories" on public.story_media;
+create policy "Admins can update media for their stories"
+on public.story_media
+for update
+to authenticated
+using (
+  exists (
+    select 1
+    from public.stories
+    where stories.id = story_media.story_id
+      and stories.author_id = auth.uid()
+      and public.is_newsroom_admin()
+  )
+)
+with check (
+  exists (
+    select 1
+    from public.stories
+    where stories.id = story_media.story_id
+      and stories.author_id = auth.uid()
+      and public.is_newsroom_admin()
+  )
+);
+
+drop policy if exists "Admins can delete media for their stories" on public.story_media;
+create policy "Admins can delete media for their stories"
+on public.story_media
+for delete
+to authenticated
+using (
+  exists (
+    select 1
+    from public.stories
+    where stories.id = story_media.story_id
+      and stories.author_id = auth.uid()
+      and public.is_newsroom_admin()
+  )
+);
 
 drop policy if exists "Visitors can submit contact messages" on public.contact_messages;
 create policy "Visitors can submit contact messages"

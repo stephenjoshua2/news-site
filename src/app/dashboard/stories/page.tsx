@@ -4,11 +4,13 @@ import { ShareStoryButton } from "@/components/ShareStoryButton";
 import { StatePanel } from "@/components/StatePanel";
 import { StatusBadge } from "@/components/StatusBadge";
 import { StoryForm } from "@/components/StoryForm";
+import { AutoScroller } from "@/components/AutoScroller";
 import { SubmitButton } from "@/components/SubmitButton";
 import { requireAdminUser } from "@/lib/auth";
 import { getCanonicalUrl } from "@/lib/site";
 import { getStoryImageUrl } from "@/lib/story-media";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import type { StoryMedia } from "@/lib/types";
 
 import { deleteStoryAction, saveStoryAction } from "../actions";
 
@@ -25,7 +27,7 @@ async function getStoriesData(userId: string) {
     .order("updated_at", { ascending: false });
 
   if (storiesError || !stories || stories.length === 0) {
-    return { stories: [], commentCountsByStory: {}, commentsLoadFailed: false, storiesLoadFailed: !!storiesError };
+    return { stories: [], commentCountsByStory: {}, mediaByStory: {}, commentsLoadFailed: false, storiesLoadFailed: !!storiesError };
   }
 
   const storyIds = stories.map((story) => story.id);
@@ -40,7 +42,19 @@ async function getStoriesData(userId: string) {
     return counts;
   }, {});
 
-  return { stories, commentCountsByStory, commentsLoadFailed: !!commentsError, storiesLoadFailed: false };
+  const { data: mediaRows } = await supabase
+    .from("story_media")
+    .select("*")
+    .in("story_id", storyIds)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  const mediaByStory = ((mediaRows ?? []) as StoryMedia[]).reduce<Record<string, StoryMedia[]>>((groups, media) => {
+    groups[media.story_id] = [...(groups[media.story_id] ?? []), media];
+    return groups;
+  }, {});
+
+  return { stories, commentCountsByStory, mediaByStory, commentsLoadFailed: !!commentsError, storiesLoadFailed: false };
 }
 
 type StoriesPageProps = {
@@ -53,17 +67,36 @@ const noticeMessages: Record<string, string> = {
   "story-deleted": "Story deleted",
 };
 
+const errorMessages: Record<string, string> = {
+  "story-validation": "Story failed to save. Please make sure title (>3 chars), excerpt (>10 chars), and content (>20 chars) are long enough.",
+  "image-type": "The featured image is not a supported file type.",
+  "gallery-image-type": "One or more gallery images is not a supported file type.",
+  "image-size": "The featured image exceeds the maximum file size.",
+  "gallery-image-size": "One or more gallery images exceeds the maximum file size.",
+  "missing-config": "The database connection is not configured.",
+  "story-save-failed": "A database error occurred while saving the story.",
+  "gallery-save-failed": "A database error occurred while saving the gallery.",
+  "gallery-upload-failed": "Failed to upload one or more gallery images.",
+};
+
 export default async function StoriesPage({ searchParams }: StoriesPageProps) {
   const user = await requireAdminUser();
-  const { stories, storiesLoadFailed, commentsLoadFailed, commentCountsByStory } = await getStoriesData(user.id);
+  const { stories, storiesLoadFailed, commentsLoadFailed, commentCountsByStory, mediaByStory } = await getStoriesData(user.id);
 
   const noticeText = searchParams?.notice ? noticeMessages[searchParams.notice] : undefined;
+  const errorText = searchParams?.error ? (errorMessages[searchParams.error] || "An unexpected error occurred.") : undefined;
 
   return (
     <>
+      <AutoScroller />
       {noticeText && (
         <div className="mb-6">
           <InlineMessage tone="success" title="Success">{noticeText}</InlineMessage>
+        </div>
+      )}
+      {errorText && (
+        <div className="mb-6">
+          <InlineMessage tone="error" title="Action Failed">{errorText}</InlineMessage>
         </div>
       )}
       <div className="bg-surface p-4 sm:p-6 lg:p-8 rounded border border-border">
@@ -98,7 +131,8 @@ export default async function StoriesPage({ searchParams }: StoriesPageProps) {
                   <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4 bg-surface-muted p-4 rounded">
                     <div className="text-xs text-muted flex flex-col sm:flex-row gap-2 sm:gap-4">
                       <span><strong>Comments:</strong> {commentsLoadFailed ? "-" : commentCountsByStory[story.id] ?? 0}</span>
-                      <span><strong>Media:</strong> {getStoryImageUrl(story) ? "Image" : "None"}</span>
+                      <span><strong>Media:</strong> {getStoryImageUrl(story) ? "Featured image" : "No featured image"}</span>
+                      <span><strong>Gallery:</strong> {mediaByStory[story.id]?.length ?? 0}</span>
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                       {story.status === "published" && (
@@ -137,7 +171,7 @@ export default async function StoriesPage({ searchParams }: StoriesPageProps) {
                     </div>
                   </div>
 
-                  <StoryForm action={saveStoryAction} story={story} title="Edit Story" description="" />
+                  <StoryForm action={saveStoryAction} story={story} gallery={mediaByStory[story.id] ?? []} title="Edit Story" description="" />
                 </div>
               </details>
             ))}

@@ -9,10 +9,15 @@ import { SubscribeForm } from "@/components/SubscribeForm";
 import { ViewTracker } from "@/components/ViewTracker";
 import { getCurrentAdminSession } from "@/lib/auth";
 import { getCanonicalUrl, SITE_NAME, toJsonLd } from "@/lib/site";
-import { getStoryImageUrl, getStoryVideoUrl } from "@/lib/story-media";
+import {
+  getStoryGalleryCount,
+  getStoryImageUrl,
+  getStoryVideoUrl,
+  sortStoryMedia,
+} from "@/lib/story-media";
 import { hasSupabaseEnv } from "@/lib/supabase/config";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { Comment, Story } from "@/lib/types";
+import type { Comment, Story, StoryMedia, StoryWithGallery } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -26,8 +31,9 @@ type StoryPageProps = {
 type StoryPageData = {
   comments: Comment[];
   commentsError: boolean;
-  relatedStories: Story[];
-  story: Story | null;
+  gallery: StoryMedia[];
+  relatedStories: StoryWithGallery[];
+  story: StoryWithGallery | null;
   storyError: boolean;
   isAdmin: boolean;
 };
@@ -109,6 +115,7 @@ async function getStoryPageData(id: string): Promise<StoryPageData> {
     return {
       comments: [],
       commentsError: false,
+      gallery: [],
       relatedStories: [],
       story: null,
       storyError: true,
@@ -120,6 +127,7 @@ async function getStoryPageData(id: string): Promise<StoryPageData> {
     return {
       comments: [],
       commentsError: false,
+      gallery: [],
       relatedStories: [],
       story: null,
       storyError: false,
@@ -143,11 +151,39 @@ async function getStoryPageData(id: string): Promise<StoryPageData> {
     .order("created_at", { ascending: false })
     .limit(3);
 
+  const { data: galleryRows } = await supabase
+    .from("story_media")
+    .select("*")
+    .eq("story_id", id)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  const relatedStoryIds = (relatedStories ?? []).map((relatedStory) => relatedStory.id);
+  const { data: relatedMediaRows } =
+    relatedStoryIds.length > 0
+      ? await supabase
+          .from("story_media")
+          .select("story_id")
+          .in("story_id", relatedStoryIds)
+      : { data: [] };
+
+  const relatedGalleryCounts = (relatedMediaRows ?? []).reduce<Record<string, number>>((counts, row) => {
+    counts[row.story_id] = (counts[row.story_id] ?? 0) + 1;
+    return counts;
+  }, {});
+
   return {
     comments: comments ?? [],
     commentsError: Boolean(commentsError),
-    relatedStories: relatedStories ?? [],
-    story,
+    gallery: sortStoryMedia((galleryRows ?? []) as StoryMedia[]),
+    relatedStories: (relatedStories ?? []).map((relatedStory) => ({
+      ...relatedStory,
+      gallery_count: relatedGalleryCounts[relatedStory.id] ?? 0,
+    })),
+    story: {
+      ...story,
+      gallery_count: (galleryRows ?? []).length,
+    },
     storyError: false,
     isAdmin,
   };
@@ -173,6 +209,7 @@ export default async function StoryPage({
 
   const {
     story,
+    gallery,
     comments,
     commentsError,
     relatedStories,
@@ -282,16 +319,47 @@ export default async function StoryPage({
         {/* Article Content */}
         <div className="max-w-5xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-14">
           <article className="flex-1 min-w-0 max-w-3xl">
-            <div className="font-headline text-xl sm:text-2xl font-medium leading-relaxed mb-8 sm:mb-10 text-on-surface/90 border-l-4 border-primary pl-5 sm:pl-8 italic">
-              {story.excerpt}
-            </div>
-            <div className="story-body-content text-on-surface text-base sm:text-lg font-body leading-relaxed sm:leading-loose">
-              {story.content}
-            </div>
+            {story.excerpt && story.excerpt.trim() !== "" && (
+              <div className="font-headline text-xl sm:text-2xl font-medium leading-relaxed mb-8 sm:mb-10 text-on-surface/90 border-l-4 border-primary pl-5 sm:pl-8 italic">
+                {story.excerpt}
+              </div>
+            )}
+            {story.content && story.content.trim() !== "" && (
+              <div className="story-body-content text-on-surface text-base sm:text-lg font-body leading-relaxed sm:leading-loose">
+                {story.content}
+              </div>
+            )}
 
             <div className="mt-10 sm:mt-12 border-t border-outline-variant/20 pt-6 sm:pt-8">
               <ShareStoryButton title={story.title} text={story.excerpt} />
             </div>
+
+            {gallery.length > 0 && (
+              <section className={`story-photo-gallery ${!story.content?.trim() ? 'mt-4' : 'mt-10 sm:mt-12 border-t border-outline-variant/20 pt-8 sm:pt-10'}`} aria-labelledby="photo-gallery-heading">
+                <div className="story-photo-gallery-header">
+                  <h2 id="photo-gallery-heading" className="font-headline text-2xl sm:text-3xl font-black italic tracking-tight">
+                    Photo Gallery
+                  </h2>
+                  <span className="gallery-count-badge">
+                    {gallery.length} {gallery.length === 1 ? "photo" : "photos"}
+                  </span>
+                </div>
+                <div className="story-photo-gallery-grid">
+                  {gallery.map((media) => (
+                    <figure className="story-photo-gallery-item" key={media.id}>
+                      <img
+                        src={media.url}
+                        alt={media.alt_text ?? media.caption ?? story.title}
+                        loading="lazy"
+                      />
+                      {media.caption ? (
+                        <figcaption>{media.caption}</figcaption>
+                      ) : null}
+                    </figure>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* Comments Section */}
             <section className="mt-14 sm:mt-20 pt-8 sm:pt-10 border-t border-outline-variant/20">
@@ -309,10 +377,20 @@ export default async function StoryPage({
                     <Link href={`/story/${relStory.id}`}>
                       {(() => {
                         const relatedImageUrl = getStoryImageUrl(relStory);
+                        const galleryCount = getStoryGalleryCount(relStory);
                         return relatedImageUrl ? (
-                          <div className="aspect-[4/3] w-full overflow-hidden bg-surface-container-highest mb-3">
+                          <div className="aspect-[4/3] w-full overflow-hidden bg-surface-container-highest mb-3 relative">
                             <img src={relatedImageUrl} alt={relStory.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            {galleryCount > 0 ? (
+                              <span className="gallery-count-badge gallery-count-badge-overlay">
+                                +{galleryCount} {galleryCount === 1 ? "photo" : "photos"}
+                              </span>
+                            ) : null}
                           </div>
+                        ) : galleryCount > 0 ? (
+                          <span className="gallery-count-badge">
+                            +{galleryCount} {galleryCount === 1 ? "photo" : "photos"}
+                          </span>
                         ) : null;
                       })()}
                       <span className="text-[10px] font-bold uppercase tracking-widest text-primary">{relStory.category}</span>

@@ -17,7 +17,7 @@ import {
 } from "@/lib/media";
 import { hasSupabaseEnv } from "@/lib/supabase/config";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { Database, StoryStatus } from "@/lib/types";
+import type { Database, StoryMedia, StoryStatus } from "@/lib/types";
 
 function readText(formData: FormData, key: string): string {
   const value = formData.get(key);
@@ -43,6 +43,21 @@ function readOptionalDateTime(formData: FormData, key: string): string | null {
   }
 
   return parsed.toISOString();
+}
+
+function readOptionalIndexedText(formData: FormData, prefix: string, id: string): string | null {
+  return readOptionalText(formData, `${prefix}_${id}`);
+}
+
+function readIndexedNumber(formData: FormData, prefix: string, id: string, fallback: number): number {
+  const value = readText(formData, `${prefix}_${id}`);
+
+  if (!value) {
+    return fallback;
+  }
+
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) ? parsed : fallback;
 }
 
 function addHours(date: Date, hours: number): string {
@@ -76,7 +91,11 @@ function sanitizeFileName(fileName: string): string {
 }
 
 function redirectToDashboard(search: string): never {
-  redirect(`/dashboard?${search}`);
+  redirect(`/dashboard/stories?${search}`);
+}
+
+function redirectToDashboardWithFile(error: string, fileName: string): never {
+  redirectToDashboard(`error=${error}&file=${encodeURIComponent(fileName)}`);
 }
 
 function isPermissionError(error: { code?: string | null; message?: string | null }) {
@@ -84,6 +103,10 @@ function isPermissionError(error: { code?: string | null; message?: string | nul
     error.code === "42501" ||
     error.message?.toLowerCase().includes("row-level security") === true
   );
+}
+
+function getProvidedFiles(formData: FormData, key: string): File[] {
+  return formData.getAll(key).filter(isProvidedFile);
 }
 
 async function removeStorageObject(
@@ -135,6 +158,143 @@ async function uploadStorageObject(
   };
 }
 
+async function validateGalleryImage(file: File) {
+  if (!isAllowedImageType(file.type)) {
+    redirectToDashboardWithFile("gallery-image-type", file.name);
+  }
+
+  if (file.size > MAX_IMAGE_FILE_SIZE) {
+    redirectToDashboardWithFile("gallery-image-size", file.name);
+  }
+
+  if (!(await hasAllowedImageSignature(file))) {
+    redirectToDashboardWithFile("gallery-image-type", file.name);
+  }
+}
+
+async function updateStoryGallery(input: {
+  formData: FormData;
+  storyId: string;
+  supabase: ReturnType<typeof createSupabaseServerClient>;
+  userId: string;
+}) {
+  const { formData, storyId, supabase, userId } = input;
+  const galleryUploads = getProvidedFiles(formData, "gallery_images");
+  const submittedMediaIds = formData
+    .getAll("gallery_media_id")
+    .filter((value): value is string => typeof value === "string" && value.length > 0);
+
+  if (galleryUploads.length === 0 && submittedMediaIds.length === 0) {
+    return;
+  }
+
+  for (const file of galleryUploads) {
+    await validateGalleryImage(file);
+  }
+
+  const { data: existingMedia, error: mediaLoadError } = await supabase
+    .from("story_media")
+    .select("*")
+    .eq("story_id", storyId);
+
+  if (mediaLoadError) {
+    if (isPermissionError(mediaLoadError)) {
+      redirectToDashboard("error=admin-setup");
+    }
+
+    redirectToDashboard("error=gallery-save-failed");
+  }
+
+  const mediaRows = (existingMedia ?? []) as StoryMedia[];
+
+  for (const media of mediaRows) {
+    if (!submittedMediaIds.includes(media.id)) {
+      continue;
+    }
+
+    if (formData.get(`gallery_remove_${media.id}`) === "on") {
+      try {
+        await removeStorageObject(supabase, STORY_IMAGE_BUCKET, media.storage_path);
+      } catch {
+        redirectToDashboard("error=storage-delete-failed");
+      }
+
+      const { error } = await supabase
+        .from("story_media")
+        .delete()
+        .eq("id", media.id)
+        .eq("story_id", storyId);
+
+      if (error) {
+        redirectToDashboard("error=gallery-save-failed");
+      }
+
+      continue;
+    }
+
+    const caption = readOptionalIndexedText(formData, "gallery_caption", media.id);
+    const altText = readOptionalIndexedText(formData, "gallery_alt", media.id);
+
+    if ((caption && caption.length > 240) || (altText && altText.length > 180)) {
+      redirectToDashboard("error=gallery-save-failed");
+    }
+
+    const { error } = await supabase
+      .from("story_media")
+      .update({
+        caption,
+        alt_text: altText,
+        sort_order: readIndexedNumber(formData, "gallery_sort", media.id, media.sort_order),
+      })
+      .eq("id", media.id)
+      .eq("story_id", storyId);
+
+    if (error) {
+      redirectToDashboard("error=gallery-save-failed");
+    }
+  }
+
+  const maxSortOrder = mediaRows.reduce(
+    (highest, media) => Math.max(highest, media.sort_order),
+    -1,
+  );
+
+  for (const [index, file] of galleryUploads.entries()) {
+    let upload: Awaited<ReturnType<typeof uploadStorageObject>>;
+
+    try {
+      upload = await uploadStorageObject(
+        supabase,
+        STORY_IMAGE_BUCKET,
+        storyId,
+        userId,
+        file,
+      );
+    } catch {
+      redirectToDashboardWithFile("gallery-upload-failed", file.name);
+    }
+
+    const { error } = await supabase.from("story_media").insert({
+      story_id: storyId,
+      url: upload.url,
+      storage_path: upload.path,
+      media_type: "image",
+      alt_text: sanitizeFileName(file.name).replace(/\.[^.]+$/, "").replace(/-/g, " "),
+      sort_order: maxSortOrder + index + 1,
+    });
+
+    if (error) {
+      try {
+        await removeStorageObject(supabase, STORY_IMAGE_BUCKET, upload.path);
+      } catch {
+        // The database write failed; the editor-facing save error is the useful signal.
+      }
+
+      redirectToDashboardWithFile("gallery-save-failed", file.name);
+    }
+  }
+}
+
 function validateStoryFields(input: {
   title: string;
   category: string;
@@ -160,9 +320,7 @@ function validateStoryFields(input: {
     category.length < 2 ||
     category.length > 80 ||
     (location !== null && location.length > 120) ||
-    excerpt.length < 10 ||
-    excerpt.length > 280 ||
-    content.length < 20
+    excerpt.length > 280
   ) {
     redirectToDashboard("error=story-validation");
   }
@@ -204,7 +362,7 @@ export async function saveStoryAction(formData: FormData) {
   const excerpt = readText(formData, "excerpt");
   const content = readText(formData, "content");
 
-  if (!title || !category || !excerpt || !content) {
+  if (!title || !category) {
     redirectToDashboard("error=story-validation");
   }
 
@@ -320,7 +478,7 @@ export async function saveStoryAction(formData: FormData) {
       if (isPermissionError(updateError)) {
         redirectToDashboard("error=admin-setup");
       }
-
+      console.error("Supabase Update Error:", updateError);
       redirectToDashboard("error=story-save-failed");
     }
   } else {
@@ -358,7 +516,7 @@ export async function saveStoryAction(formData: FormData) {
       if (error && isPermissionError(error)) {
         redirectToDashboard("error=admin-setup");
       }
-
+      console.error("Supabase Insert Error:", error);
       redirectToDashboard("error=story-save-failed");
     }
 
@@ -458,8 +616,16 @@ export async function saveStoryAction(formData: FormData) {
     }
   }
 
+  await updateStoryGallery({
+    formData,
+    storyId: selectedStory.id,
+    supabase,
+    userId: user.id,
+  });
+
   revalidatePath("/");
   revalidatePath("/dashboard");
+  revalidatePath("/dashboard/stories");
   revalidatePath(`/story/${selectedStory.id}`);
 
   if (nextStatus === "published") {
@@ -494,8 +660,19 @@ export async function deleteStoryAction(formData: FormData) {
   }
 
   const ensuredData = data;
+  const { data: galleryMedia } = await supabase
+    .from("story_media")
+    .select("storage_path")
+    .eq("story_id", storyId);
 
   try {
+    for (const media of galleryMedia ?? []) {
+      await removeStorageObject(
+        supabase,
+        STORY_IMAGE_BUCKET,
+        media.storage_path,
+      );
+    }
     await removeStorageObject(
       supabase,
       STORY_IMAGE_BUCKET,
@@ -526,6 +703,7 @@ export async function deleteStoryAction(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/dashboard");
+  revalidatePath("/dashboard/stories");
   revalidatePath(`/story/${storyId}`);
 
   redirect(`/dashboard/stories?notice=story-deleted`);

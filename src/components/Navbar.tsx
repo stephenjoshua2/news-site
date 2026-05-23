@@ -59,9 +59,16 @@ export function Navbar({ isAdmin, publishedCategories }: NavbarProps) {
       }
     };
 
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setMobileMenuOpen(false);
+      }
+    };
+
     if (mobileMenuOpen) {
       document.body.style.overflow = "hidden";
       window.addEventListener("keydown", handleEscape);
+      window.addEventListener("resize", handleResize);
     } else {
       document.body.style.overflow = "";
     }
@@ -69,6 +76,7 @@ export function Navbar({ isAdmin, publishedCategories }: NavbarProps) {
     return () => {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", handleEscape);
+      window.removeEventListener("resize", handleResize);
     };
   }, [mobileMenuOpen]);
 

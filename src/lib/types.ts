@@ -37,6 +37,23 @@ export type Story = {
   views: number;
 };
 
+export type StoryMedia = {
+  id: string;
+  story_id: string;
+  url: string;
+  storage_path: string | null;
+  media_type: "image";
+  caption: string | null;
+  alt_text: string | null;
+  sort_order: number;
+  created_at: string;
+};
+
+export type StoryWithGallery = Story & {
+  gallery_count?: number;
+  gallery?: StoryMedia[];
+};
+
 export type Comment = {
   id: string;
   story_id: string;
@@ -147,6 +164,39 @@ export interface Database {
         Relationships: [
           {
             foreignKeyName: "comments_story_id_fkey";
+            columns: ["story_id"];
+            referencedRelation: "stories";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      story_media: {
+        Row: StoryMedia;
+        Insert: {
+          id?: string;
+          story_id: string;
+          url: string;
+          storage_path?: string | null;
+          media_type?: "image";
+          caption?: string | null;
+          alt_text?: string | null;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          story_id?: string;
+          url?: string;
+          storage_path?: string | null;
+          media_type?: "image";
+          caption?: string | null;
+          alt_text?: string | null;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "story_media_story_id_fkey";
             columns: ["story_id"];
             referencedRelation: "stories";
             referencedColumns: ["id"];

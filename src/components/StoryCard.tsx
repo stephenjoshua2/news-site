@@ -1,69 +1,155 @@
 import Link from "next/link";
+import { getStoryGalleryCount, getStoryImageUrl } from "@/lib/story-media";
+import type { StoryWithGallery } from "@/lib/types";
 
-import { getStoryImageUrl } from "@/lib/story-media";
-import type { Story } from "@/lib/types";
+type StoryCardVariant = "lead" | "sidebar" | "grid" | "archive";
 
 type StoryCardProps = {
-  story: Story;
-  variant?: "default" | "compact";
+  story: StoryWithGallery;
+  variant: StoryCardVariant;
 };
 
-const formatter = new Intl.DateTimeFormat("en-US", {
-  dateStyle: "medium",
-});
-
-export function StoryCard({
-  story,
-  variant = "default",
-}: StoryCardProps) {
-  const publishedLabel = formatter.format(
-    new Date(story.published_at ?? story.created_at),
-  );
-  const imageUrl = getStoryImageUrl(story);
-  const cardClassName = [
-    "story-card",
-    variant === "compact" ? "story-card-compact" : "",
-    imageUrl ? "" : "story-card-text-only",
-  ].filter(Boolean).join(" ");
-  const headingClassName = variant === "compact" ? "card-title card-title-compact" : "card-title";
+export function GalleryBadge({ count, overlay = false }: { count: number; overlay?: boolean }) {
+  if (count <= 0) {
+    return null;
+  }
 
   return (
-    <article className={cardClassName}>
-      {imageUrl ? (
-        <div className="story-card-media">
-          <img src={imageUrl} alt={story.title} loading="lazy" />
-        </div>
-      ) : null}
-
-      <div className="story-card-body">
-        <div className="meta-row story-card-meta story-card-meta-public">
-          <span className="pill pill-editorial">{story.category}</span>
-          {story.video_url ? <span className="pill pill-muted">Video</span> : null}
-          {story.location ? (
-            <span className="meta-text story-card-meta-item">{story.location}</span>
-          ) : null}
-          <span className="meta-text">{publishedLabel}</span>
-        </div>
-
-        <div className="story-card-copy">
-          <h3 className={headingClassName}>
-            <Link href={`/story/${story.id}`}>{story.title}</Link>
-          </h3>
-
-          <p>{story.excerpt}</p>
-        </div>
-
-        <div className="meta-row story-card-footer story-card-footer-public">
-          <span className="story-card-read-label">Full report</span>
-          <Link
-            aria-label={`Read story: ${story.title}`}
-            className="story-card-link"
-            href={`/story/${story.id}`}
-          >
-            Read report
-          </Link>
-        </div>
-      </div>
-    </article>
+    <span className={overlay ? "gallery-count-badge gallery-count-badge-overlay" : "gallery-count-badge"}>
+      +{count} {count === 1 ? "photo" : "photos"}
+    </span>
   );
+}
+
+export function formatDate(dateString: string | null) {
+  if (!dateString) return "";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  }).format(new Date(dateString));
+}
+
+export function formatTime(dateString: string | null) {
+  if (!dateString) return "";
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit"
+  }).format(new Date(dateString));
+}
+
+export function StoryCard({ story, variant }: StoryCardProps) {
+  const imageUrl = getStoryImageUrl(story);
+  const galleryCount = story.gallery_count ?? getStoryGalleryCount(story);
+  const storyUrl = `/story/${story.id}`;
+
+  if (variant === "lead") {
+    const featuredTitleClassName = imageUrl
+      ? "font-headline text-3xl sm:text-4xl lg:text-5xl font-bold text-on-surface leading-[1.08] tracking-tight group-hover:text-primary transition-colors"
+      : "font-headline text-2xl sm:text-3xl lg:text-4xl font-bold text-on-surface leading-[1.12] tracking-tight group-hover:text-primary transition-colors";
+
+    return (
+      <Link href={storyUrl} className="group cursor-pointer flex flex-col gap-4">
+        {imageUrl ? (
+          <div className="w-full bg-surface-container-highest overflow-hidden rounded-sm aspect-[16/9] relative">
+            <img
+              src={imageUrl}
+              alt={story.title}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+            <GalleryBadge count={galleryCount} overlay />
+          </div>
+        ) : null}
+
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <span className="text-primary font-label text-[10px] font-bold uppercase tracking-widest">
+              {story.category}
+            </span>
+            <span className="w-1 h-1 bg-zinc-300 rounded-full"></span>
+            <span className="text-zinc-500 font-label text-[10px] font-bold uppercase tracking-widest">
+              {formatDate(story.published_at || story.created_at)}
+            </span>
+            {!imageUrl ? <GalleryBadge count={galleryCount} /> : null}
+          </div>
+          <h2 className={featuredTitleClassName}>
+            {story.title}
+          </h2>
+          {story.excerpt?.trim() && (
+            <p className="font-body text-on-surface-variant text-base sm:text-lg leading-relaxed max-w-3xl">
+              {story.excerpt}
+            </p>
+          )}
+        </div>
+      </Link>
+    );
+  }
+
+  if (variant === "sidebar") {
+    return (
+      <Link href={storyUrl} className="group cursor-pointer flex flex-col gap-3 pt-6 first:pt-0">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <span className="text-primary font-label text-[9px] font-bold uppercase tracking-widest">{story.category}</span>
+          <span className="w-1 h-1 bg-zinc-300 rounded-full"></span>
+          <span className="text-zinc-500 font-label text-[9px] font-bold uppercase tracking-widest">
+            {formatTime(story.published_at || story.created_at)}
+          </span>
+          {!imageUrl ? <GalleryBadge count={galleryCount} /> : null}
+        </div>
+        <div className="flex gap-4">
+          <h4 className="font-headline text-lg sm:text-xl font-bold leading-tight group-hover:text-primary transition-colors flex-1">{story.title}</h4>
+          {imageUrl ? (
+            <div className="w-20 h-20 flex-shrink-0 overflow-hidden bg-surface-container-low rounded-sm relative">
+              <img
+                src={imageUrl}
+                alt={story.title}
+                className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+              />
+              <GalleryBadge count={galleryCount} overlay />
+            </div>
+          ) : null}
+        </div>
+      </Link>
+    );
+  }
+
+  if (variant === "grid") {
+    return (
+      <Link href={storyUrl} className="flex flex-col group cursor-pointer">
+        {imageUrl ? (
+          <div className="aspect-[4/3] overflow-hidden rounded-sm mb-4 bg-surface-container-highest relative">
+            <img
+              src={imageUrl}
+              alt={story.title}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <GalleryBadge count={galleryCount} overlay />
+          </div>
+        ) : <GalleryBadge count={galleryCount} />}
+        
+        <span className="text-primary font-label text-[9px] font-bold uppercase tracking-widest mb-2">{story.category}</span>
+        <h4 className="font-headline text-lg font-bold leading-snug mb-2 group-hover:text-primary transition-colors">{story.title}</h4>
+        {story.excerpt?.trim() && (
+          <p className="text-xs text-on-surface-variant line-clamp-2">{story.excerpt}</p>
+        )}
+      </Link>
+    );
+  }
+
+  if (variant === "archive") {
+    return (
+      <Link href={storyUrl} className="py-5 flex justify-between items-start gap-4 group cursor-pointer block hover:bg-surface-container-lowest transition-colors px-2 -mx-2">
+        <div className="max-w-2xl">
+          <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-2 block">
+            {formatDate(story.published_at || story.created_at)} &bull; {story.category}
+          </span>
+          <GalleryBadge count={galleryCount} />
+          <h4 className="font-headline text-lg sm:text-xl font-bold group-hover:text-primary transition-colors leading-snug">{story.title}</h4>
+        </div>
+        <span aria-hidden="true" className="hidden sm:inline text-primary opacity-0 group-hover:opacity-100 transition-opacity mt-1">&rarr;</span>
+      </Link>
+    );
+  }
+
+  return null;
 }

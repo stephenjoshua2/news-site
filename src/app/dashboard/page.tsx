@@ -9,6 +9,10 @@ type DashboardPageProps = {
 
 const dashboardMessages: Record<string, string> = {
   "admin-setup": "Add the admin email to public.admin_users in Supabase before using dashboard write actions.",
+  "gallery-image-size": "Gallery images must be 5 MB or smaller.",
+  "gallery-image-type": "Gallery uploads must use supported image files.",
+  "gallery-save-failed": "Gallery images could not be saved. Make sure the story_media migration has been applied.",
+  "gallery-upload-failed": "A gallery image could not be uploaded. Check your bucket policies and try again.",
   "image-size": "Featured image files must be 5 MB or smaller.",
   "image-type": "Featured image uploads must use an image file.",
   "image-url": "Featured image fallback URLs must start with http:// or https://.",
@@ -72,6 +76,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   const noticeCode = readParam(searchParams?.notice);
   const errorCode = readParam(searchParams?.error);
+  const fileName = readParam(searchParams?.file);
   const bannerText = dashboardMessages[noticeCode ?? errorCode ?? ""];
   const isError = Boolean(errorCode);
 
@@ -80,6 +85,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       {bannerText && (
          <div className={`p-4 border-l-4 font-bold text-sm mb-8 ${isError ? 'bg-danger-soft text-danger border-danger' : 'bg-success-soft text-success border-success'}`}>
            {bannerText}
+           {fileName ? ` (${fileName})` : ""}
          </div>
       )}
 

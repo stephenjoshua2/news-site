@@ -2,10 +2,10 @@ import Link from "next/link";
 import { StatePanel } from "@/components/StatePanel";
 import { SubscribeForm } from "@/components/SubscribeForm";
 import { formatCategoryLabel, slugifyCategory } from "@/lib/site";
-import { getStoryImageUrl } from "@/lib/story-media";
 import { hasSupabaseEnv } from "@/lib/supabase/config";
+import { StoryCard } from "@/components/StoryCard";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { Story } from "@/lib/types";
+import type { Story, StoryWithGallery } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -15,9 +15,13 @@ type HomePageProps = {
 
 type BreakingStory = Pick<Story, "id" | "title" | "breaking_label">;
 
+const LATEST_NEWS_WINDOW_HOURS = 72;
+const LATEST_NEWS_LIMIT = 8;
+const MORE_STORIES_LIMIT = 6;
+
 async function getPublishedStories(): Promise<{
   error: boolean;
-  stories: Story[];
+  stories: StoryWithGallery[];
 }> {
   if (!hasSupabaseEnv()) {
     return {
@@ -34,9 +38,30 @@ async function getPublishedStories(): Promise<{
     .order("published_at", { ascending: false })
     .order("created_at", { ascending: false });
 
+  if (error || !data || data.length === 0) {
+    return {
+      error: Boolean(error),
+      stories: data ?? [],
+    };
+  }
+
+  const storyIds = data.map((story) => story.id);
+  const { data: mediaRows } = await supabase
+    .from("story_media")
+    .select("story_id")
+    .in("story_id", storyIds);
+
+  const galleryCounts = (mediaRows ?? []).reduce<Record<string, number>>((counts, row) => {
+    counts[row.story_id] = (counts[row.story_id] ?? 0) + 1;
+    return counts;
+  }, {});
+
   return {
-    error: Boolean(error),
-    stories: data ?? [],
+    error: false,
+    stories: data.map((story) => ({
+      ...story,
+      gallery_count: galleryCounts[story.id] ?? 0,
+    })),
   };
 }
 
@@ -54,8 +79,7 @@ async function getActiveBreakingStories(): Promise<BreakingStory[]> {
     .eq("is_breaking", true)
     .or(`breaking_expires_at.is.null,breaking_expires_at.gt.${now}`)
     .order("published_at", { ascending: false })
-    .order("created_at", { ascending: false })
-    .limit(5);
+    .order("created_at", { ascending: false });
 
   if (error || !data) {
     return [];
@@ -64,30 +88,24 @@ async function getActiveBreakingStories(): Promise<BreakingStory[]> {
   return data;
 }
 
-function formatDate(dateString: string | null) {
-  if (!dateString) return "";
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric"
-  }).format(new Date(dateString));
-}
-
-function formatTime(dateString: string | null) {
-  if (!dateString) return "";
-  return new Intl.DateTimeFormat("en-US", {
-    hour: "numeric",
-    minute: "2-digit"
-  }).format(new Date(dateString));
-}
-
 function readParam(value?: string | string[]) {
   return Array.isArray(value) ? value[0] : value;
+}
+
+function getStoryDateValue(story: Pick<Story, "published_at" | "created_at">): number {
+  return new Date(story.published_at ?? story.created_at).getTime();
+}
+
+function isWithinLatestWindow(story: Pick<Story, "published_at" | "created_at">, cutoff: number): boolean {
+  const storyDateValue = getStoryDateValue(story);
+  return Number.isFinite(storyDateValue) && storyDateValue >= cutoff;
 }
 
 export default async function HomePage({ searchParams }: HomePageProps) {
   const { error: storiesLoadFailed, stories } = await getPublishedStories();
   const breakingStories = await getActiveBreakingStories();
+  const activeBreakingIds = new Set(breakingStories.map((story) => story.id));
+  const latestCutoff = Date.now() - LATEST_NEWS_WINDOW_HOURS * 60 * 60 * 1000;
   const selectedCategory = readParam(searchParams?.category);
   const categoryLabel = selectedCategory
     ? formatCategoryLabel(selectedCategory.replace(/-/g, " "))
@@ -96,14 +114,24 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     ? stories.filter((story) => slugifyCategory(story.category) === selectedCategory)
     : stories;
 
-  const featuredStory = visibleStories[0];
-  const featuredStoryImageUrl = featuredStory ? getStoryImageUrl(featuredStory) : null;
-  const spotlightStories = featuredStory ? visibleStories.slice(1, 4) : [];
-  const latestGridStories = visibleStories.slice(4, 8);
-  const remainingStories = visibleStories.slice(8);
-  const featuredTitleClassName = featuredStoryImageUrl
-    ? "font-headline text-3xl sm:text-4xl lg:text-5xl font-bold text-on-surface leading-[1.08] tracking-tight group-hover:text-primary transition-colors"
-    : "font-headline text-2xl sm:text-3xl lg:text-4xl font-bold text-on-surface leading-[1.12] tracking-tight group-hover:text-primary transition-colors";
+  const editorialStories = visibleStories.filter((story) => !activeBreakingIds.has(story.id));
+  const featuredStory = editorialStories[0] ?? null;
+  const featuredStoryId = featuredStory?.id;
+  const recentStories = editorialStories
+    .filter((story) => story.id !== featuredStoryId)
+    .filter((story) => isWithinLatestWindow(story, latestCutoff));
+  const latestNewsStories = recentStories.slice(0, LATEST_NEWS_LIMIT);
+  const latestNewsIds = new Set(latestNewsStories.map((story) => story.id));
+  const olderStories = editorialStories.filter(
+    (story) =>
+      story.id !== featuredStoryId &&
+      !latestNewsIds.has(story.id) &&
+      !isWithinLatestWindow(story, latestCutoff),
+  );
+  const spotlightStories = latestNewsStories.slice(0, 3);
+  const latestGridStories = latestNewsStories.slice(3);
+  const moreStories = olderStories.slice(0, MORE_STORIES_LIMIT);
+  const remainingStories = olderStories.slice(MORE_STORIES_LIMIT);
 
   if (!hasSupabaseEnv()) {
     return (
@@ -147,13 +175,46 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     );
   }
 
+  if (editorialStories.length === 0) {
+    return (
+      <>
+
+        <div className="bg-primary-container text-on-primary py-2 overflow-hidden flex items-center">
+          <div className="px-3 sm:px-5 flex-shrink-0 flex items-center gap-2 border-r border-white/20 mr-3 sm:mr-4">
+            <span aria-hidden="true" className="h-2 w-2 rounded-full bg-on-primary"></span>
+            <span className="font-label font-bold text-xs uppercase tracking-widest">Breaking</span>
+          </div>
+          <div className="marquee-container flex-1 min-h-5">
+            {breakingStories.length > 0 && (
+              <div className="marquee-content inline-flex gap-8 sm:gap-12 text-xs sm:text-sm font-medium">
+                {[...breakingStories, ...breakingStories].map((story, index) => (
+                  <Link
+                    className="max-w-[72vw] sm:max-w-none overflow-hidden text-ellipsis hover:underline"
+                    href={`/story/${story.id}`}
+                    key={`${story.id}-${index}`}
+                  >
+                    {story.breaking_label?.trim() || story.title}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="max-w-screen-2xl mx-auto px-6 py-12">
+          <StatePanel
+            description="Active breaking updates are running in the strip above. Other published stories will appear here once they are no longer part of the breaking window."
+            eyebrow="Breaking Updates"
+            title="The homepage is focused on live breaking coverage right now"
+            titleAs="h1"
+          />
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
-      <style dangerouslySetInnerHTML={{__html: `
-        .marquee-container { overflow: hidden; white-space: nowrap; min-width: 0; }
-        .marquee-content { display: inline-block; animation: marquee 30s linear infinite; }
-        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-      `}} />
+
 
       {/* Breaking News Marquee */}
       <div className="bg-primary-container text-on-primary py-2 overflow-hidden flex items-center">
@@ -196,72 +257,25 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
             {/* Lead Story */}
             <div className="lg:col-span-8 flex flex-col gap-6">
-              <Link href={`/story/${featuredStory.id}`} className="group cursor-pointer flex flex-col gap-4">
-                {featuredStoryImageUrl ? (
-                  <div className="w-full bg-surface-container-highest overflow-hidden rounded-sm aspect-[16/9]">
-                    <img
-                      src={featuredStoryImageUrl}
-                      alt={featuredStory.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                  </div>
-                ) : null}
-
-                <div className="flex flex-col gap-3">
-                  <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                    <span className="text-primary font-label text-[10px] font-bold uppercase tracking-widest">
-                      {featuredStory.category}
-                    </span>
-                    <span className="w-1 h-1 bg-zinc-300 rounded-full"></span>
-                    <span className="text-zinc-500 font-label text-[10px] font-bold uppercase tracking-widest">
-                      {formatDate(featuredStory.published_at || featuredStory.created_at)}
-                    </span>
-                  </div>
-                  <h2 className={featuredTitleClassName}>
-                    {featuredStory.title}
-                  </h2>
-                  <p className="font-body text-on-surface-variant text-base sm:text-lg leading-relaxed max-w-3xl">
-                    {featuredStory.excerpt}
-                  </p>
-                </div>
-              </Link>
+              <StoryCard story={featuredStory} variant="lead" />
             </div>
 
-            {/* "More Coverage" Sidebar */}
+            {/* Latest News Sidebar */}
             <aside className="lg:col-span-4 flex flex-col gap-7 md:gap-8 border-t-2 lg:border-t-0 lg:border-l-2 border-outline-variant/30 pt-8 lg:pt-0 lg:pl-8">
-              <h3 className="font-headline text-xl font-black uppercase tracking-tight italic text-primary">More Coverage</h3>
+              <div>
+                <h3 className="font-headline text-xl font-black uppercase tracking-tight italic text-primary">Latest News</h3>
+                <p className="mt-2 text-xs text-on-surface-variant font-medium">Published in the last {LATEST_NEWS_WINDOW_HOURS} hours.</p>
+              </div>
 
               <div className="flex flex-col gap-6 divide-y divide-outline-variant/20">
-                {spotlightStories.map((story, idx) => (
-                  <Link href={`/story/${story.id}`} key={story.id} className={`group cursor-pointer flex flex-col gap-3 ${idx > 0 ? 'pt-6' : ''}`}>
-                    {(() => {
-                      const imageUrl = getStoryImageUrl(story);
-                      return (
-                        <>
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                      <span className="text-primary font-label text-[9px] font-bold uppercase tracking-widest">{story.category}</span>
-                      <span className="w-1 h-1 bg-zinc-300 rounded-full"></span>
-                      <span className="text-zinc-500 font-label text-[9px] font-bold uppercase tracking-widest">
-                        {formatTime(story.published_at || story.created_at)}
-                      </span>
-                    </div>
-                    <div className="flex gap-4">
-                      <h4 className="font-headline text-lg sm:text-xl font-bold leading-tight group-hover:text-primary transition-colors flex-1">{story.title}</h4>
-                      {imageUrl ? (
-                        <div className="w-20 h-20 flex-shrink-0 overflow-hidden bg-surface-container-low rounded-sm">
-                          <img
-                            src={imageUrl}
-                            alt={story.title}
-                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                          />
-                        </div>
-                      ) : null}
-                    </div>
-                        </>
-                      );
-                    })()}
-                  </Link>
+                {spotlightStories.map((story) => (
+                  <StoryCard key={story.id} story={story} variant="sidebar" />
                 ))}
+                {spotlightStories.length === 0 && (
+                  <p className="text-sm text-on-surface-variant leading-relaxed">
+                    No additional recent updates in this section yet.
+                  </p>
+                )}
               </div>
 
               <div className="mt-4 md:mt-8 p-5 sm:p-6 bg-surface-container-lowest border border-outline-variant/30 rounded-sm">
@@ -277,7 +291,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         {latestGridStories.length > 0 && (
           <section className="mt-16 md:mt-20 pt-10 md:pt-12 border-t-2 border-outline-variant/30">
             <div className="flex items-end justify-between gap-4 sm:gap-6 mb-8 md:mb-10">
-              <h3 className="font-headline text-3xl font-black italic tracking-tight">Latest Stories</h3>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">Recent reporting</p>
+                <h3 className="font-headline text-3xl font-black italic tracking-tight">Latest News</h3>
+              </div>
               <Link href="#archive" className="min-h-10 font-label text-[10px] font-extrabold uppercase tracking-widest flex items-center gap-1 group text-zinc-500 hover:text-primary">
                 View Archive
                 <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">&rarr;</span>
@@ -286,23 +303,29 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7 md:gap-8">
               {latestGridStories.map(story => (
-                <Link href={`/story/${story.id}`} key={story.id} className="flex flex-col group cursor-pointer">
-                  {(() => {
-                    const imageUrl = getStoryImageUrl(story);
-                    return imageUrl ? (
-                      <div className="aspect-[4/3] overflow-hidden rounded-sm mb-4 bg-surface-container-highest">
-                      <img
-                        src={imageUrl}
-                        alt={story.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                      </div>
-                    ) : null;
-                  })()}
-                  <span className="text-primary font-label text-[9px] font-bold uppercase tracking-widest mb-2">{story.category}</span>
-                  <h4 className="font-headline text-lg font-bold leading-snug mb-2 group-hover:text-primary transition-colors">{story.title}</h4>
-                  <p className="text-xs text-on-surface-variant line-clamp-2">{story.excerpt}</p>
-                </Link>
+                <StoryCard key={story.id} story={story} variant="grid" />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* More Stories */}
+        {moreStories.length > 0 && (
+          <section id="more-stories" className="mt-16 md:mt-20 pt-10 md:pt-12 border-t-2 border-outline-variant/30">
+            <div className="flex items-end justify-between gap-4 sm:gap-6 mb-8 md:mb-10">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">Beyond the latest window</p>
+                <h3 className="font-headline text-3xl font-black italic tracking-tight">More Stories</h3>
+              </div>
+              <Link href="#archive" className="min-h-10 font-label text-[10px] font-extrabold uppercase tracking-widest flex items-center gap-1 group text-zinc-500 hover:text-primary">
+                View Archive
+                <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">&rarr;</span>
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 md:gap-8">
+              {moreStories.map(story => (
+                <StoryCard key={story.id} story={story} variant="grid" />
               ))}
             </div>
           </section>
@@ -313,14 +336,15 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           <section id="archive" className="mt-16 md:mt-20 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 pt-10 md:pt-12 border-t border-outline-variant/30">
             <div className="lg:col-span-4">
               <h3 className="font-headline text-3xl sm:text-4xl font-black text-primary leading-none mb-4 italic tracking-tight">The Archive</h3>
-              <p className="text-on-surface-variant text-sm font-medium leading-relaxed mb-8">The defining events of the last 24 hours, contextualized by our editorial desk.</p>
-
+              <p className="text-on-surface-variant text-sm font-medium leading-relaxed mb-8">Older reporting and context from the Frontline Daily desk.</p>
               {remainingStories[0] && (
                 <div className="bg-surface-container-lowest p-6 rounded-sm border border-outline-variant/30">
                   <h5 className="text-[10px] font-bold uppercase tracking-widest text-primary mb-3">Featured from Archive</h5>
                   <div className="flex flex-col gap-2">
                     <h6 className="font-headline text-xl font-bold leading-tight">{remainingStories[0].title}</h6>
-                    <p className="text-xs text-on-surface-variant line-clamp-3">{remainingStories[0].excerpt}</p>
+                    {remainingStories[0].excerpt?.trim() && (
+                      <p className="text-xs text-on-surface-variant line-clamp-3">{remainingStories[0].excerpt}</p>
+                    )}
                     <Link href={`/story/${remainingStories[0].id}`} className="text-[10px] font-bold uppercase tracking-widest text-primary hover:underline mt-2 inline-block">
                       Read Story &rarr;
                     </Link>
@@ -332,15 +356,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             <div className="lg:col-span-8">
               <div className="divide-y divide-outline-variant/20 border-y border-outline-variant/20">
                 {remainingStories.map(story => (
-                  <Link href={`/story/${story.id}`} key={story.id} className="py-5 flex justify-between items-start gap-4 group cursor-pointer block hover:bg-surface-container-lowest transition-colors px-2 -mx-2">
-                    <div className="max-w-2xl">
-                      <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-2 block">
-                        {formatDate(story.published_at || story.created_at)} &bull; {story.category}
-                      </span>
-                      <h4 className="font-headline text-lg sm:text-xl font-bold group-hover:text-primary transition-colors leading-snug">{story.title}</h4>
-                    </div>
-                    <span aria-hidden="true" className="hidden sm:inline text-primary opacity-0 group-hover:opacity-100 transition-opacity mt-1">&rarr;</span>
-                  </Link>
+                  <StoryCard key={story.id} story={story} variant="archive" />
                 ))}
               </div>
             </div>
