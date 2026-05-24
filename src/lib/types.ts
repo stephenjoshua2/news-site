@@ -7,6 +7,14 @@ export type Json =
   | Json[];
 
 export type StoryStatus = "draft" | "published";
+export type StoryType = "article" | "photo_desk";
+
+export type PhotoDeskItem = {
+  image_url: string;
+  image_path: string;
+  caption: string;
+  order: number;
+};
 
 export type ActionState = {
   status: "idle" | "success" | "error";
@@ -23,11 +31,13 @@ export type Story = {
   excerpt: string;
   content: string;
   status: StoryStatus;
+  story_type: StoryType;
   featured_image_url: string | null;
   featured_image_path: string | null;
   video_url: string | null;
   video_path: string | null;
   video_caption: string | null;
+  photo_desk_items: PhotoDeskItem[] | null;
   is_breaking: boolean;
   breaking_label: string | null;
   breaking_expires_at: string | null;
@@ -100,11 +110,13 @@ export interface Database {
           excerpt: string;
           content: string;
           status?: StoryStatus;
+          story_type?: StoryType;
           featured_image_url?: string | null;
           featured_image_path?: string | null;
           video_url?: string | null;
           video_path?: string | null;
           video_caption?: string | null;
+          photo_desk_items?: PhotoDeskItem[] | null;
           is_breaking?: boolean;
           breaking_label?: string | null;
           breaking_expires_at?: string | null;
@@ -122,11 +134,13 @@ export interface Database {
           excerpt?: string;
           content?: string;
           status?: StoryStatus;
+          story_type?: StoryType;
           featured_image_url?: string | null;
           featured_image_path?: string | null;
           video_url?: string | null;
           video_path?: string | null;
           video_caption?: string | null;
+          photo_desk_items?: PhotoDeskItem[] | null;
           is_breaking?: boolean;
           breaking_label?: string | null;
           breaking_expires_at?: string | null;

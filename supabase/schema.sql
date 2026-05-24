@@ -62,6 +62,8 @@ create table if not exists public.stories (
   title text not null,
   category text not null,
   location text,
+  story_type text not null default 'article',
+  photo_desk_items jsonb,
   excerpt text not null,
   content text not null,
   status public.story_status not null default 'draft',
@@ -78,6 +80,7 @@ create table if not exists public.stories (
   updated_at timestamptz not null default timezone('utc', now()),
   published_at timestamptz,
   constraint stories_title_length check (char_length(trim(title)) >= 3),
+  constraint stories_story_type_check check (story_type in ('article', 'photo_desk')),
   constraint stories_publish_state check (
     (status = 'draft' and published_at is null)
     or

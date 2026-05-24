@@ -327,6 +327,9 @@ export function Navbar({ isAdmin, publishedCategories }: NavbarProps) {
           <Link href="/dashboard/stories" className="dash-mobile-link" onClick={() => setMobileMenuOpen(false)}>
             Stories
           </Link>
+          <Link href="/dashboard/photo-desk" className="dash-mobile-link" onClick={() => setMobileMenuOpen(false)}>
+            Photo Desk
+          </Link>
           <Link href="/dashboard/analytics" className="dash-mobile-link" onClick={() => setMobileMenuOpen(false)}>
             Analytics
           </Link>

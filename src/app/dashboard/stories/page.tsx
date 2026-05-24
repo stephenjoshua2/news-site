@@ -99,6 +99,16 @@ export default async function StoriesPage({ searchParams }: StoriesPageProps) {
           <InlineMessage tone="error" title="Action Failed">{errorText}</InlineMessage>
         </div>
       )}
+      <div id="new-story" className="w-full mb-10">
+        <div className="bg-surface p-4 sm:p-6 lg:p-8 pb-4 rounded-t border border-b-0 border-border border-l-4 border-l-primary">
+          <h2 className="font-headline text-2xl sm:text-3xl font-black mb-2">Create a New Story</h2>
+          <p className="text-sm text-muted font-medium">Drafts are saved to the editorial workspace.</p>
+        </div>
+        <div className="bg-surface p-4 sm:p-6 lg:p-8 pt-0 rounded-b border border-t-0 border-border border-l-4 border-l-primary">
+          <StoryForm action={saveStoryAction} title="" description="" />
+        </div>
+      </div>
+
       <div className="bg-surface p-4 sm:p-6 lg:p-8 rounded border border-border">
         <h2 className="font-headline text-xl sm:text-2xl font-bold mb-5 sm:mb-6 italic border-b border-border pb-4">Story Library</h2>
 
@@ -177,16 +187,6 @@ export default async function StoriesPage({ searchParams }: StoriesPageProps) {
             ))}
           </div>
         )}
-      </div>
-
-      <div id="new-story" className="w-full">
-        <div className="bg-surface p-4 sm:p-6 lg:p-8 pb-4 rounded-t border border-b-0 border-border border-l-4 border-l-primary">
-          <h2 className="font-headline text-2xl sm:text-3xl font-black mb-2">Create a New Story</h2>
-          <p className="text-sm text-muted font-medium">Drafts are saved to the editorial workspace.</p>
-        </div>
-        <div className="bg-surface p-4 sm:p-6 lg:p-8 pt-0 rounded-b border border-t-0 border-border border-l-4 border-l-primary">
-          <StoryForm action={saveStoryAction} title="" description="" />
-        </div>
       </div>
     </>
   );

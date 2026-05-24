@@ -4,6 +4,7 @@ import { SubscribeForm } from "@/components/SubscribeForm";
 import { formatCategoryLabel, slugifyCategory } from "@/lib/site";
 import { hasSupabaseEnv } from "@/lib/supabase/config";
 import { StoryCard } from "@/components/StoryCard";
+import { PhotoDeskCard } from "@/components/PhotoDeskCard";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Story, StoryWithGallery } from "@/lib/types";
 
@@ -132,6 +133,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const latestGridStories = latestNewsStories.slice(3);
   const moreStories = olderStories.slice(0, MORE_STORIES_LIMIT);
   const remainingStories = olderStories.slice(MORE_STORIES_LIMIT);
+  const photoDeskStories = visibleStories.filter((s) => s.story_type === "photo_desk");
 
   if (!hasSupabaseEnv()) {
     return (
@@ -285,6 +287,24 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               </div>
             </aside>
           </div>
+        )}
+
+        {/* Photo Desk Stories Grid */}
+        {photoDeskStories.length > 0 && (
+          <section className="mt-16 md:mt-20 pt-10 md:pt-12 border-t-2 border-outline-variant/30">
+            <div className="flex items-end justify-between gap-4 sm:gap-6 mb-8 md:mb-10">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">Visual Reporting</p>
+                <h3 className="font-headline text-3xl font-black italic tracking-tight">Photo Desk</h3>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 md:gap-8">
+              {photoDeskStories.map(story => (
+                <PhotoDeskCard key={story.id} story={story} />
+              ))}
+            </div>
+          </section>
         )}
 
         {/* Latest Stories Grid */}

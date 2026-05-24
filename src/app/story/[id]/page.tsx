@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { CommentSection } from "@/components/CommentSection";
 import { ShareStoryButton } from "@/components/ShareStoryButton";
+import { PhotoDeskViewer } from "@/components/PhotoDeskViewer";
 import { StatePanel } from "@/components/StatePanel";
 import { SubscribeForm } from "@/components/SubscribeForm";
 import { ViewTracker } from "@/components/ViewTracker";

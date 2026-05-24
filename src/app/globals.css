@@ -5748,8 +5748,13 @@ details[open] > summary .hidden.group-open\:block {
 
   .editor-file-input::file-selector-button {
     margin: 0 0 0.5rem;
-    min-height: 36px;
+    min-height: 44px;
     width: 100%;
+  }
+
+  .editor-input,
+  .editor-action-btn {
+    min-height: 44px;
   }
 
   .editor-textarea-excerpt {
@@ -5761,6 +5766,8 @@ details[open] > summary .hidden.group-open\:block {
     font-size: 1rem;
     line-height: 1.65;
     min-height: 260px;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
   }
 
   .analytics-header,
