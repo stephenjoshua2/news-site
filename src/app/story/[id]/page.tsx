@@ -237,6 +237,10 @@ export default async function StoryPage({
     );
   }
 
+  if (story.story_type === "photo_desk") {
+    return <PhotoDeskViewer story={story} comments={comments} isAdmin={isAdmin} />;
+  }
+
   const primaryDate = new Date(story.published_at ?? story.created_at);
   const storyUrl = getCanonicalUrl(`/story/${story.id}`);
   const imageUrl = getStoryImageUrl(story);

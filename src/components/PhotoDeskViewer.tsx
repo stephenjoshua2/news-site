@@ -17,7 +17,16 @@ type PhotoDeskViewerProps = {
 };
 
 export function PhotoDeskViewer({ story, comments, isAdmin }: PhotoDeskViewerProps) {
-  const items = story.photo_desk_items || [];
+  let items: PhotoDeskItem[] = [];
+  if (Array.isArray(story.photo_desk_items)) {
+    items = story.photo_desk_items;
+  } else if (typeof story.photo_desk_items === "string") {
+    try {
+      items = JSON.parse(story.photo_desk_items);
+    } catch {
+      items = [];
+    }
+  }
   const sortedItems = [...items].sort((a, b) => a.order - b.order);
   
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);

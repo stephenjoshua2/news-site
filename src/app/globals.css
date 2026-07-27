@@ -5855,3 +5855,179 @@ details[open] > summary .hidden.group-open\:block {
   }
 }
 
+/* ==========================================================================
+   Photo Desk Components
+   ========================================================================== */
+
+/* Photo Desk Card (Homepage) */
+.photo-desk-card {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: var(--surface-strong, #1e1e1e);
+  aspect-ratio: 4/5;
+  transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+.photo-desk-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+.photo-desk-card-image-wrap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.photo-desk-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease, filter 0.3s ease;
+}
+.photo-desk-card:hover .photo-desk-card-image {
+  transform: scale(1.04);
+  filter: brightness(0.85);
+}
+.photo-desk-card-count {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.75);
+  color: #ffffff;
+  padding: 0.3rem 0.65rem;
+  border-radius: 9999px;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.photo-desk-card-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.5) 50%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.5rem;
+}
+.photo-desk-card-caption {
+  color: rgba(255, 255, 255, 0.9);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.4;
+  margin-top: 0.25rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Photo Desk Viewer */
+.photo-desk-viewer-container {
+  min-height: 100vh;
+  background-color: #050505;
+}
+.photo-desk-scroll-area {
+  scroll-snap-type: y mandatory;
+  overflow-y: auto;
+  height: 100vh;
+  scrollbar-width: none; /* Firefox */
+}
+.photo-desk-scroll-area::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+.photo-desk-slide {
+  height: 100vh;
+  width: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: #0a0a0a;
+}
+.photo-desk-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+.photo-desk-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: 2.5rem 1.75rem 2rem;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.photo-desk-caption[data-expanded="true"] {
+  height: 100%;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(12px);
+  padding: 3rem 2rem;
+  justify-content: center;
+}
+.photo-desk-caption-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.75) 50%, transparent 100%);
+  z-index: -1;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.photo-desk-caption[data-expanded="true"] .photo-desk-caption-gradient {
+  opacity: 0;
+}
+.photo-desk-caption-content {
+  position: relative;
+  z-index: 2;
+}
+.photo-desk-caption-text {
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+  font-weight: 500;
+}
+.photo-desk-caption[data-expanded="true"] .photo-desk-caption-text {
+  font-size: 1.25rem;
+  line-height: 1.8;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.photo-desk-counter {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.75);
+  color: #ffffff;
+  padding: 0.4rem 0.85rem;
+  border-radius: 9999px;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  pointer-events: none;
+}
+.photo-desk-footer {
+  scroll-snap-align: start;
+  min-height: 50vh;
+}
+

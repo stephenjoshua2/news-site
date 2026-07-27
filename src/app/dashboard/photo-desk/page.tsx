@@ -178,46 +178,40 @@ export default function PhotoDeskAdminPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
+                    <input
+                      type="file"
+                      id={`photo-input-${slot.id}`}
+                      name="photo_file"
+                      className="hidden"
+                      accept="image/jpeg,image/png,image/webp,image/avif"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) handleFileSelect(slot.id, e.target.files[0]);
+                      }}
+                    />
                     {slot.previewUrl ? (
                       <div className="relative aspect-video rounded-md overflow-hidden bg-surface-strong group">
                         <img src={slot.previewUrl} alt="Preview" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                          <label className="cursor-pointer text-white font-bold px-4 py-2 bg-black/50 rounded hover:bg-black/70">
+                          <label
+                            htmlFor={`photo-input-${slot.id}`}
+                            className="cursor-pointer text-white font-bold px-4 py-2 bg-black/50 rounded hover:bg-black/70"
+                          >
                             Change Photo
-                            <input
-                              type="file"
-                              name="photo_file"
-                              className="hidden"
-                              accept="image/jpeg,image/png,image/webp,image/avif"
-                              onChange={(e) => {
-                                if (e.target.files && e.target.files[0]) handleFileSelect(slot.id, e.target.files[0]);
-                              }}
-                            />
                           </label>
                         </div>
                       </div>
                     ) : (
-                      <label className="flex flex-col items-center justify-center aspect-video border-2 border-dashed border-outline-variant/50 rounded-md bg-surface hover:bg-surface-container-low transition-colors cursor-pointer group">
+                      <label
+                        htmlFor={`photo-input-${slot.id}`}
+                        className="flex flex-col items-center justify-center aspect-video border-2 border-dashed border-outline-variant/50 rounded-md bg-surface hover:bg-surface-container-low transition-colors cursor-pointer group"
+                      >
                         <svg className="w-10 h-10 text-outline-variant group-hover:text-primary transition-colors mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
                         </svg>
                         <span className="text-sm font-medium text-on-surface-variant group-hover:text-primary">
                           Click to select image
                         </span>
-                        <input
-                          type="file"
-                          name="photo_file"
-                          className="hidden"
-                          accept="image/jpeg,image/png,image/webp,image/avif"
-                          onChange={(e) => {
-                            if (e.target.files && e.target.files[0]) handleFileSelect(slot.id, e.target.files[0]);
-                          }}
-                        />
                       </label>
-                    )}
-                    {/* Fallback hidden input if this slot has no file selected yet, so arrays match */}
-                    {!slot.file && !slot.existingItem && (
-                       <input type="file" name="photo_file" className="hidden" />
                     )}
                   </div>
 

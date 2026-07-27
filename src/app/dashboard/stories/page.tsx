@@ -124,6 +124,11 @@ export default async function StoriesPage({ searchParams }: StoriesPageProps) {
                   <div className="flex flex-col gap-1 min-w-0 flex-1">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 min-w-0">
                       <StatusBadge status={story.status} />
+                      {story.story_type === "photo_desk" && (
+                        <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 flex-shrink-0">
+                          Photo Desk
+                        </span>
+                      )}
                       <span className="font-bold text-lg font-headline truncate block min-w-0">{story.title}</span>
                     </div>
                     <span className="text-xs text-muted font-medium flex-shrink-0">
