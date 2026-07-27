@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { CommentSection } from "@/components/CommentSection";
 import { ShareStoryButton } from "@/components/ShareStoryButton";
 import { PhotoDeskViewer } from "@/components/PhotoDeskViewer";
+import { ArticlePhotoSlider } from "@/components/ArticlePhotoSlider";
 import { StatePanel } from "@/components/StatePanel";
 import { SubscribeForm } from "@/components/SubscribeForm";
 import { ViewTracker } from "@/components/ViewTracker";
@@ -308,18 +309,16 @@ export default async function StoryPage({
           </div>
         </header>
 
-        {/* Lead Visual */}
-        {(imageUrl || videoUrl) && (
-          <section className="max-w-4xl mx-auto mb-10 sm:mb-12 relative">
-            <div className="aspect-[4/3] sm:aspect-video w-full overflow-hidden bg-surface-container-highest">
-              {imageUrl ? (
-                <img src={imageUrl} alt={story.title} className="w-full h-full object-cover" />
-              ) : videoUrl ? (
-                <video controls src={videoUrl} className="w-full h-full object-cover"></video>
-              ) : null}
-            </div>
-          </section>
-        )}
+        {/* Lead Visual & Photo Slider */}
+        <div className="max-w-4xl mx-auto">
+          <ArticlePhotoSlider
+            featuredImageUrl={imageUrl}
+            featuredAlt={story.title}
+            gallery={gallery}
+            videoUrl={videoUrl}
+            videoCaption={story.video_caption}
+          />
+        </div>
 
         {/* Article Content */}
         <div className="max-w-5xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-14">
@@ -338,33 +337,6 @@ export default async function StoryPage({
             <div className="mt-10 sm:mt-12 border-t border-outline-variant/20 pt-6 sm:pt-8">
               <ShareStoryButton title={story.title} text={story.excerpt} />
             </div>
-
-            {gallery.length > 0 && (
-              <section className={`story-photo-gallery ${!story.content?.trim() ? 'mt-4' : 'mt-10 sm:mt-12 border-t border-outline-variant/20 pt-8 sm:pt-10'}`} aria-labelledby="photo-gallery-heading">
-                <div className="story-photo-gallery-header">
-                  <h2 id="photo-gallery-heading" className="font-headline text-2xl sm:text-3xl font-black italic tracking-tight">
-                    Photo Gallery
-                  </h2>
-                  <span className="gallery-count-badge">
-                    {gallery.length} {gallery.length === 1 ? "photo" : "photos"}
-                  </span>
-                </div>
-                <div className="story-photo-gallery-grid">
-                  {gallery.map((media) => (
-                    <figure className="story-photo-gallery-item" key={media.id}>
-                      <img
-                        src={media.url}
-                        alt={media.alt_text ?? media.caption ?? story.title}
-                        loading="lazy"
-                      />
-                      {media.caption ? (
-                        <figcaption>{media.caption}</figcaption>
-                      ) : null}
-                    </figure>
-                  ))}
-                </div>
-              </section>
-            )}
 
             {/* Comments Section */}
             <section className="mt-14 sm:mt-20 pt-8 sm:pt-10 border-t border-outline-variant/20">

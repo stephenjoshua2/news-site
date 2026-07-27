@@ -53,6 +53,12 @@ export function PhotoDeskViewer({ story, comments, isAdmin }: PhotoDeskViewerPro
     return () => observer.disconnect();
   }, []);
 
+  const scrollToIndex = (index: number) => {
+    if (index >= 0 && index < sortedItems.length) {
+      slideRefs.current[index]?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   if (sortedItems.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
@@ -62,10 +68,39 @@ export function PhotoDeskViewer({ story, comments, isAdmin }: PhotoDeskViewerPro
   }
 
   return (
-    <div className="photo-desk-viewer-container bg-black min-h-screen">
+    <div className="photo-desk-viewer-container bg-black min-h-screen relative">
       <div className="photo-desk-counter">
         {activeIndex + 1} / {sortedItems.length}
       </div>
+
+      {/* Floating Prev / Next Arrow Controls */}
+      {sortedItems.length > 1 && (
+        <div className="fixed inset-y-0 left-0 right-0 pointer-events-none z-40 flex items-center justify-between px-4 sm:px-8 max-w-4xl mx-auto">
+          <button
+            type="button"
+            onClick={() => scrollToIndex(activeIndex - 1)}
+            disabled={activeIndex === 0}
+            className="pointer-events-auto w-12 h-12 rounded-full bg-black/70 hover:bg-black text-white flex items-center justify-center backdrop-blur-md transition-all border border-white/20 disabled:opacity-30 disabled:cursor-not-allowed"
+            aria-label="Previous photo slide"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => scrollToIndex(activeIndex + 1)}
+            disabled={activeIndex === sortedItems.length - 1}
+            className="pointer-events-auto w-12 h-12 rounded-full bg-black/70 hover:bg-black text-white flex items-center justify-center backdrop-blur-md transition-all border border-white/20 disabled:opacity-30 disabled:cursor-not-allowed"
+            aria-label="Next photo slide"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+        </div>
+      )}
 
       <div className="photo-desk-scroll-area mx-auto max-w-[680px] bg-[#111] shadow-2xl relative">
         <ViewTracker storyId={story.id} />
