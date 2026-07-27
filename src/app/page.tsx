@@ -115,7 +115,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     ? stories.filter((story) => slugifyCategory(story.category) === selectedCategory)
     : stories;
 
-  const editorialStories = visibleStories.filter((story) => !activeBreakingIds.has(story.id));
+  const editorialStories = visibleStories.filter(
+    (story) => !activeBreakingIds.has(story.id) && story.story_type !== "photo_desk",
+  );
   const featuredStory = editorialStories[0] ?? null;
   const featuredStoryId = featuredStory?.id;
   const recentStories = editorialStories
