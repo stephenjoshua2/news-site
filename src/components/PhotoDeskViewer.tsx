@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CommentSection } from "@/components/CommentSection";
-import { ShareStoryButton } from "@/components/ShareStoryButton";
 import { ViewTracker } from "@/components/ViewTracker";
 import type { Comment, PhotoDeskItem, Story } from "@/lib/types";
 
@@ -28,10 +27,12 @@ export function PhotoDeskViewer({ story, comments, isAdmin }: PhotoDeskViewerPro
     }
   }
   const sortedItems = [...items].sort((a, b) => a.order - b.order);
-  
+
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const slideRefs = useRef<(HTMLElement | null)[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isCommentDrawerOpen, setIsCommentDrawerOpen] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -43,36 +44,43 @@ export function PhotoDeskViewer({ story, comments, isAdmin }: PhotoDeskViewerPro
           }
         });
       },
-      { threshold: 0.6 }
+      { threshold: 0.5 }
     );
-    
+
     slideRefs.current.forEach((el) => {
       if (el) observer.observe(el);
     });
-    
+
     return () => observer.disconnect();
   }, [sortedItems.length]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowDown" || e.key === "PageDown") {
-        e.preventDefault();
-        scrollToIndex(activeIndex + 1);
-      } else if (e.key === "ArrowUp" || e.key === "PageUp") {
-        e.preventDefault();
-        scrollToIndex(activeIndex - 1);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeIndex, sortedItems.length]);
 
   const scrollToIndex = (index: number) => {
     if (index >= 0 && index < sortedItems.length) {
       slideRefs.current[index]?.scrollIntoView({ behavior: "smooth" });
-    } else if (index === sortedItems.length) {
-      slideRefs.current[index]?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: story.title,
+      text: sortedItems[0]?.caption || story.title,
+      url: window.location.href,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch {
+        // Fallback
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        setCopiedLink(true);
+        setTimeout(() => setCopiedLink(false), 2000);
+      } catch {
+        // Fallback
+      }
     }
   };
 
@@ -85,11 +93,11 @@ export function PhotoDeskViewer({ story, comments, isAdmin }: PhotoDeskViewerPro
   }
 
   return (
-    <div className="photo-desk-viewer-container bg-black text-white relative">
+    <div className="photo-desk-viewer-container bg-black text-white relative min-h-screen">
       <ViewTracker storyId={story.id} />
 
-      {/* Top Segmented Story Progress Bar (Instagram / BBC Style) */}
-      <div className="fixed top-0 left-0 right-0 z-50 p-3 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none">
+      {/* Top Segmented Story Progress Bar */}
+      <div className="fixed top-0 left-0 right-0 z-50 p-3 bg-gradient-to-b from-black/85 via-black/40 to-transparent pointer-events-none">
         <div className="max-w-xl mx-auto flex items-center gap-1.5 pointer-events-auto">
           {sortedItems.map((_, idx) => (
             <button
@@ -110,8 +118,8 @@ export function PhotoDeskViewer({ story, comments, isAdmin }: PhotoDeskViewerPro
       </div>
 
       {/* Top Right Counter Badge */}
-      <div className="fixed top-6 right-4 sm:right-8 z-50 bg-black/75 backdrop-blur-md text-white text-[11px] font-bold uppercase tracking-widest px-3.5 py-1.5 rounded-full border border-white/20 shadow-xl pointer-events-none">
-        {activeIndex < sortedItems.length ? `${activeIndex + 1} / ${sortedItems.length}` : "Story End"}
+      <div className="fixed top-6 right-4 sm:right-8 z-40 bg-black/75 backdrop-blur-md text-white text-[11px] font-bold uppercase tracking-widest px-3.5 py-1.5 rounded-full border border-white/20 shadow-xl pointer-events-none">
+        {activeIndex + 1} / {sortedItems.length}
       </div>
 
       {/* Floating Prev / Next Desktop Arrow Controls */}
@@ -132,7 +140,7 @@ export function PhotoDeskViewer({ story, comments, isAdmin }: PhotoDeskViewerPro
           <button
             type="button"
             onClick={() => scrollToIndex(activeIndex + 1)}
-            disabled={activeIndex === sortedItems.length}
+            disabled={activeIndex === sortedItems.length - 1}
             className="pointer-events-auto w-12 h-12 rounded-full bg-black/70 hover:bg-black text-white flex items-center justify-center backdrop-blur-md transition-all border border-white/20 disabled:opacity-20 disabled:cursor-not-allowed hover:scale-110 shadow-2xl"
             aria-label="Next photo slide"
           >
@@ -143,18 +151,18 @@ export function PhotoDeskViewer({ story, comments, isAdmin }: PhotoDeskViewerPro
         </div>
       )}
 
-      {/* Main Single Scroll Container with Mandatory Snap */}
+      {/* Main Continuous Fluid Scroll Container (No rigid snap trap) */}
       <div className="photo-desk-scroll-area mx-auto max-w-[720px] relative">
         {sortedItems.map((item, index) => {
           const isExpanded = expandedIndex === index;
-          
+
           return (
             <section
               key={index}
               ref={(el) => {
                 slideRefs.current[index] = el;
               }}
-              className="photo-desk-slide"
+              className="photo-desk-slide relative"
               onClick={() => setExpandedIndex(null)}
             >
               <img
@@ -163,7 +171,7 @@ export function PhotoDeskViewer({ story, comments, isAdmin }: PhotoDeskViewerPro
                 className="photo-desk-image"
                 loading={index < 2 ? "eager" : "lazy"}
               />
-              
+
               {item.caption && (
                 <div
                   className="photo-desk-caption cursor-pointer"
@@ -189,34 +197,74 @@ export function PhotoDeskViewer({ story, comments, isAdmin }: PhotoDeskViewerPro
             </section>
           );
         })}
+      </div>
 
-        {/* Footer Section - End of Story */}
-        <section
-          ref={(el) => {
-            slideRefs.current[sortedItems.length] = el;
-          }}
-          className="photo-desk-footer bg-[#0d0d0d] text-white/90 p-8 sm:p-12 min-h-[80vh] flex flex-col justify-center border-t border-white/10"
+      {/* Floating Action Badges Bar over the Visual Story */}
+      <div className="fixed bottom-6 left-0 right-0 z-40 px-4 pointer-events-none">
+        <div className="max-w-md mx-auto flex items-center justify-center gap-3 pointer-events-auto">
+          {/* Comments Badge Button */}
+          <button
+            type="button"
+            onClick={() => setIsCommentDrawerOpen(true)}
+            className="flex items-center gap-2 bg-black/80 hover:bg-black text-white px-4 py-2.5 rounded-full border border-white/20 backdrop-blur-xl text-xs font-bold uppercase tracking-wider shadow-2xl transition-all hover:scale-105 active:scale-95"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+            </svg>
+            <span>{comments.length > 0 ? `${comments.length} Comments` : "Write Comment"}</span>
+          </button>
+
+          {/* Share Button */}
+          <button
+            type="button"
+            onClick={handleShare}
+            className="flex items-center gap-2 bg-black/80 hover:bg-black text-white px-4 py-2.5 rounded-full border border-white/20 backdrop-blur-xl text-xs font-bold uppercase tracking-wider shadow-2xl transition-all hover:scale-105 active:scale-95"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" />
+            </svg>
+            <span>{copiedLink ? "Link Copied!" : "Share"}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Glassmorphic Sliding Comment Overlay Drawer */}
+      {isCommentDrawerOpen && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-md flex flex-col justify-end animate-fadeIn"
+          onClick={() => setIsCommentDrawerOpen(false)}
         >
-          <div className="mb-8">
-            <span className="text-primary font-label text-[10px] font-bold uppercase tracking-widest block mb-2">
-              {story.category}
-            </span>
-            <h1 className="font-headline text-3xl sm:text-4xl font-bold mb-4 leading-tight">{story.title}</h1>
-            <div className="flex items-center gap-2 text-xs text-white/50 uppercase tracking-widest font-bold">
-              {story.location && <span>{story.location} &bull; </span>}
-              <span>{dateFormatter.format(new Date(story.published_at || story.created_at))}</span>
+          <div
+            className="w-full max-w-xl mx-auto bg-[#121212]/95 backdrop-blur-2xl rounded-t-3xl border-t border-white/20 p-6 sm:p-8 max-h-[82vh] overflow-y-auto shadow-2xl relative text-white flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Drawer Handle & Close */}
+            <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-1 bg-white/30 rounded-full" />
+                <h3 className="font-headline text-xl font-bold">Discussion</h3>
+                <span className="text-xs bg-white/10 px-2.5 py-0.5 rounded-full font-mono text-white/70">
+                  {comments.length}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsCommentDrawerOpen(false)}
+                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Embedded Dark Theme Comment Section */}
+            <div className="photo-desk-comments text-on-surface">
+              <CommentSection storyId={story.id} initialComments={comments} isAdmin={isAdmin} />
             </div>
           </div>
-          
-          <div className="border-t border-white/10 pt-8 mb-10">
-            <ShareStoryButton title={story.title} text={sortedItems[0]?.caption || ""} />
-          </div>
-
-          <div className="photo-desk-comments bg-surface rounded-lg text-on-surface p-6 sm:p-8 shadow-2xl">
-            <CommentSection storyId={story.id} initialComments={comments} isAdmin={isAdmin} />
-          </div>
-        </section>
-      </div>
+        </div>
+      )}
     </div>
   );
 }

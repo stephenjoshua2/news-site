@@ -5935,10 +5935,9 @@ details[open] > summary .hidden.group-open\:block {
   background-color: #050505;
 }
 .photo-desk-scroll-area {
-  scroll-snap-type: y mandatory;
   overflow-y: auto;
-  height: 100vh;
-  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
   scroll-behavior: smooth;
   scrollbar-width: none; /* Firefox */
 }
@@ -5946,11 +5945,10 @@ details[open] > summary .hidden.group-open\:block {
   display: none; /* Chrome/Safari */
 }
 .photo-desk-slide {
+  min-height: 80vh;
   height: 100vh;
   height: 100dvh;
   width: 100%;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
   position: relative;
   display: flex;
   flex-direction: column;
