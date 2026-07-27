@@ -118,7 +118,7 @@ export function PhotoDeskViewer({ story, comments, isAdmin }: PhotoDeskViewerPro
       </div>
 
       {/* Top Right Counter Badge */}
-      <div className="fixed top-6 right-4 sm:right-8 z-40 bg-black/75 backdrop-blur-md text-white text-[11px] font-bold uppercase tracking-widest px-3.5 py-1.5 rounded-full border border-white/20 shadow-xl pointer-events-none">
+      <div className="fixed top-6 right-4 sm:right-8 z-40 bg-black/60 backdrop-blur-md text-white text-[11px] font-bold uppercase tracking-widest px-3.5 py-1.5 rounded-full border border-white/20 shadow-xl pointer-events-none opacity-80">
         {activeIndex + 1} / {sortedItems.length}
       </div>
 
@@ -129,7 +129,7 @@ export function PhotoDeskViewer({ story, comments, isAdmin }: PhotoDeskViewerPro
             type="button"
             onClick={() => scrollToIndex(activeIndex - 1)}
             disabled={activeIndex === 0}
-            className="pointer-events-auto w-12 h-12 rounded-full bg-black/70 hover:bg-black text-white flex items-center justify-center backdrop-blur-md transition-all border border-white/20 disabled:opacity-20 disabled:cursor-not-allowed hover:scale-110 shadow-2xl"
+            className="pointer-events-auto w-12 h-12 rounded-full bg-black/50 hover:bg-black text-white flex items-center justify-center backdrop-blur-md transition-all border border-white/20 disabled:opacity-20 disabled:cursor-not-allowed hover:scale-110 shadow-2xl opacity-75 hover:opacity-100"
             aria-label="Previous photo slide"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -141,7 +141,7 @@ export function PhotoDeskViewer({ story, comments, isAdmin }: PhotoDeskViewerPro
             type="button"
             onClick={() => scrollToIndex(activeIndex + 1)}
             disabled={activeIndex === sortedItems.length - 1}
-            className="pointer-events-auto w-12 h-12 rounded-full bg-black/70 hover:bg-black text-white flex items-center justify-center backdrop-blur-md transition-all border border-white/20 disabled:opacity-20 disabled:cursor-not-allowed hover:scale-110 shadow-2xl"
+            className="pointer-events-auto w-12 h-12 rounded-full bg-black/50 hover:bg-black text-white flex items-center justify-center backdrop-blur-md transition-all border border-white/20 disabled:opacity-20 disabled:cursor-not-allowed hover:scale-110 shadow-2xl opacity-75 hover:opacity-100"
             aria-label="Next photo slide"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -151,7 +151,49 @@ export function PhotoDeskViewer({ story, comments, isAdmin }: PhotoDeskViewerPro
         </div>
       )}
 
-      {/* Main Continuous Fluid Scroll Container (No rigid snap trap) */}
+      {/* Side Translucent Floating Action Column (Right Side - Unblocks Captions) */}
+      <div className="fixed right-4 sm:right-8 bottom-24 z-40 flex flex-col gap-4 items-center pointer-events-none">
+        {/* Comments Button */}
+        <div className="flex flex-col items-center gap-1 pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => setIsCommentDrawerOpen(true)}
+            className="w-12 h-12 rounded-full bg-black/40 hover:bg-black/90 text-white/90 hover:text-white flex items-center justify-center backdrop-blur-xl border border-white/25 shadow-2xl transition-all duration-200 opacity-75 hover:opacity-100 hover:scale-110 active:scale-95 group"
+            aria-label="Open discussion comments"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+            </svg>
+          </button>
+          <span className="text-[10px] font-bold text-white/80 drop-shadow uppercase tracking-wider">
+            {comments.length}
+          </span>
+        </div>
+
+        {/* Share Button */}
+        <div className="flex flex-col items-center gap-1 pointer-events-auto">
+          <button
+            type="button"
+            onClick={handleShare}
+            className="w-12 h-12 rounded-full bg-black/40 hover:bg-black/90 text-white/90 hover:text-white flex items-center justify-center backdrop-blur-xl border border-white/25 shadow-2xl transition-all duration-200 opacity-75 hover:opacity-100 hover:scale-110 active:scale-95 group relative"
+            aria-label="Share story"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" />
+            </svg>
+            {copiedLink && (
+              <span className="absolute -left-24 bg-black/90 text-white text-[10px] font-bold px-2 py-1 rounded shadow-xl border border-white/20 whitespace-nowrap animate-fadeIn">
+                Copied!
+              </span>
+            )}
+          </button>
+          <span className="text-[10px] font-bold text-white/80 drop-shadow uppercase tracking-wider">
+            Share
+          </span>
+        </div>
+      </div>
+
+      {/* Main Continuous Fluid Scroll Container */}
       <div className="photo-desk-scroll-area mx-auto max-w-[720px] relative">
         {sortedItems.map((item, index) => {
           const isExpanded = expandedIndex === index;
@@ -174,7 +216,7 @@ export function PhotoDeskViewer({ story, comments, isAdmin }: PhotoDeskViewerPro
 
               {item.caption && (
                 <div
-                  className="photo-desk-caption cursor-pointer"
+                  className="photo-desk-caption cursor-pointer pr-20"
                   data-expanded={isExpanded}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -199,39 +241,10 @@ export function PhotoDeskViewer({ story, comments, isAdmin }: PhotoDeskViewerPro
         })}
       </div>
 
-      {/* Floating Action Badges Bar over the Visual Story */}
-      <div className="fixed bottom-6 left-0 right-0 z-40 px-4 pointer-events-none">
-        <div className="max-w-md mx-auto flex items-center justify-center gap-3 pointer-events-auto">
-          {/* Comments Badge Button */}
-          <button
-            type="button"
-            onClick={() => setIsCommentDrawerOpen(true)}
-            className="flex items-center gap-2 bg-black/80 hover:bg-black text-white px-4 py-2.5 rounded-full border border-white/20 backdrop-blur-xl text-xs font-bold uppercase tracking-wider shadow-2xl transition-all hover:scale-105 active:scale-95"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-            </svg>
-            <span>{comments.length > 0 ? `${comments.length} Comments` : "Write Comment"}</span>
-          </button>
-
-          {/* Share Button */}
-          <button
-            type="button"
-            onClick={handleShare}
-            className="flex items-center gap-2 bg-black/80 hover:bg-black text-white px-4 py-2.5 rounded-full border border-white/20 backdrop-blur-xl text-xs font-bold uppercase tracking-wider shadow-2xl transition-all hover:scale-105 active:scale-95"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" />
-            </svg>
-            <span>{copiedLink ? "Link Copied!" : "Share"}</span>
-          </button>
-        </div>
-      </div>
-
       {/* Glassmorphic Sliding Comment Overlay Drawer */}
       {isCommentDrawerOpen && (
         <div
-          className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-md flex flex-col justify-end animate-fadeIn"
+          className="fixed inset-0 z-[100] bg-black/65 backdrop-blur-md flex flex-col justify-end animate-fadeIn"
           onClick={() => setIsCommentDrawerOpen(false)}
         >
           <div
