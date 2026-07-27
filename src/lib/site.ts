@@ -32,7 +32,7 @@ export function getSiteUrl(): string {
     return configuredUrl.replace(/\/+$/, "");
   }
 
-  return "http://localhost:3000";
+  return "https://frontlinedaily.org";
 }
 
 export function getCanonicalUrl(path = "/"): string {

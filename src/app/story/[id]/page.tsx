@@ -10,7 +10,7 @@ import { StatePanel } from "@/components/StatePanel";
 import { SubscribeForm } from "@/components/SubscribeForm";
 import { ViewTracker } from "@/components/ViewTracker";
 import { getCurrentAdminSession } from "@/lib/auth";
-import { getCanonicalUrl, SITE_NAME, toJsonLd } from "@/lib/site";
+import { getCanonicalUrl, getSiteUrl, SITE_NAME, toJsonLd } from "@/lib/site";
 import {
   getStoryGalleryCount,
   getStoryImageUrl,
@@ -81,24 +81,42 @@ export async function generateMetadata({ params }: StoryPageProps): Promise<Meta
     };
   }
 
-  const canonical = `/story/${story.id}`;
+  const canonicalUrl = getCanonicalUrl(`/story/${story.id}`);
   const imageUrl = getStoryImageUrl(story);
+  const siteUrl = getSiteUrl();
 
   return {
+    metadataBase: new URL(siteUrl),
     title: story.title,
-    description: story.excerpt,
+    description: story.excerpt || story.title,
     alternates: {
-      canonical,
+      canonical: canonicalUrl,
     },
     openGraph: {
       type: "article",
       title: story.title,
-      description: story.excerpt,
-      url: canonical,
+      description: story.excerpt || story.title,
+      url: canonicalUrl,
+      siteName: SITE_NAME,
       publishedTime: story.published_at ?? story.created_at,
       modifiedTime: story.updated_at,
       section: story.category,
-      images: imageUrl ? [{ url: imageUrl }] : undefined,
+      images: imageUrl
+        ? [
+            {
+              url: imageUrl,
+              width: 1200,
+              height: 630,
+              alt: story.title,
+            },
+          ]
+        : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: story.title,
+      description: story.excerpt || story.title,
+      images: imageUrl ? [imageUrl] : undefined,
     },
   };
 }
